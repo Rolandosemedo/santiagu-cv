@@ -38,7 +38,6 @@ export async function paymentRoutes(fastify: FastifyInstance) {
     {
       preHandler: [fastify.authenticate], // JWT middleware
       schema: {
-        tags: ["payments"],
         summary: "Criar PaymentIntent (CVE)",
         body: {
           type: "object",
@@ -76,7 +75,7 @@ export async function paymentRoutes(fastify: FastifyInstance) {
     "/payments/checkout",
     {
       preHandler: [fastify.authenticate],
-      schema: { tags: ["payments"], summary: "Criar Checkout Session" },
+      schema: {},
     },
     async (request, reply) => {
       const body = CreateCheckoutSchema.parse(request.body);
@@ -99,7 +98,6 @@ export async function paymentRoutes(fastify: FastifyInstance) {
     {
       preHandler: [fastify.authenticate],
       schema: {
-        tags: ["payments"],
         summary: "Verificar estado do pagamento",
         params: {
           type: "object",
@@ -133,7 +131,7 @@ export async function paymentRoutes(fastify: FastifyInstance) {
     "/payments/refund",
     {
       preHandler: [fastify.authenticate, fastify.requireAdmin],
-      schema: { tags: ["payments"], summary: "Criar reembolso" },
+      schema: {},
     },
     async (request, reply) => {
       const body = RefundSchema.parse(request.body);
