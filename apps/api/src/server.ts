@@ -13,6 +13,8 @@ import { authRoutes } from "./routes/auth";
 
 (async () => {
 
+(async () => {
+
 // ─── Fastify instance ─────────────────────────────────────
 const app = Fastify({
   logger: {
@@ -115,4 +117,5 @@ try {
   app.log.error(err);
   process.exit(1);
 }
+})();
 })();
