@@ -10,7 +10,7 @@ import { CATEGORIES } from "@/lib/types";
 import { fetchPlace, MOCK_PLACES } from "@/lib/api";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 // Generate static params from mock data
@@ -20,7 +20,8 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props) {
   try {
-    const place = await fetchPlace(params.id);
+    const { id } = await params;
+    const place = await fetchPlace(id);
     return {
       title: place.name,
       description: place.description,
