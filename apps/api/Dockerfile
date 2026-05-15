@@ -1,28 +1,24 @@
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 WORKDIR /app
 
-# Copiar tsconfig da raiz (necessário para o extends do monorepo)
-COPY tsconfig*.json ./
-COPY package*.json ./
+RUN npm install -g pnpm@9
+
 COPY apps/api/package*.json ./apps/api/
+COPY package.json ./
+RUN cd apps/api && pnpm install
 
-# Instalar dependências
-RUN npm install --workspace=apps/api
-
-# Copiar código da API
-COPY apps/api/ ./apps/api/
-
-# Build — manter WORKDIR na raiz para o extends funcionar
-RUN npx tsc -p apps/api/tsconfig.json
-
-# --- Runtime ---
-FROM node:20-alpine
-WORKDIR /app
-
-COPY --from=builder /app/apps/api/dist ./apps/api/dist
-COPY --from=builder /app/apps/api/package*.json ./apps/api/
-COPY --from=builder /app/node_modules ./node_modules
+COPY apps/api/tsconfig.json ./apps/api/
+COPY apps/api/src ./apps/api/src
 
 WORKDIR /app/apps/api
+RUN pnpm run build
+
+FROM node:22-alpine
+WORKDIR /app/apps/api
+
+COPY --from=builder /app/apps/api/dist ./dist
+COPY --from=builder /app/apps/api/node_modules ./node_modules
+COPY --from=builder /app/apps/api/package.json ./
+
 EXPOSE 3001
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/server.js"]
