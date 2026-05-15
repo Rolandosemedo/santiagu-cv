@@ -172,7 +172,7 @@ async function handleStripeEvent(
 
     // ── Checkout Session completa ───────────────────────
     case "checkout.session.completed": {
-      const session = event.data.object as Stripe.CheckoutSession;
+      const session = event.data.object as Stripe.Checkout.Session;
       const { bookingId } = session.metadata ?? {};
       const amountCVE = fromStripeAmount(session.amount_total ?? 0);
 
@@ -189,7 +189,7 @@ async function handleStripeEvent(
 
     // ── Checkout Session expirada ───────────────────────
     case "checkout.session.expired": {
-      const session = event.data.object as Stripe.CheckoutSession;
+      const session = event.data.object as Stripe.Checkout.Session;
       const { bookingId } = session.metadata ?? {};
 
       if (bookingId) {
