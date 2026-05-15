@@ -34,7 +34,8 @@ export async function generateMetadata({ params }: Props) {
 export default async function PlacePage({ params }: Props) {
   let place;
   try {
-    place = await fetchPlace(params.id);
+    const { id } = await params;
+    place = await fetchPlace(id);
   } catch {
     notFound();
   }
