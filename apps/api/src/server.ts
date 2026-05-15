@@ -34,6 +34,7 @@ import { authRoutes } from "./routes/auth";
            "https://www.santiagu.cv",
            /\.santiagu\.cv$/,
            "http://localhost:3000",
+              "https://santiaguweb-production.up.railway.app",
          ],
      credentials: true,
      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
