@@ -24,8 +24,7 @@
     "framer-motion": "^12.5.0",
     "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-select": "^2.1.6",
-    "@radix-ui/react-slider": "^1.2.3",
-    "@santiagu/types": "workspace:*"
+    "@radix-ui/react-slider": "^1.2.3"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
