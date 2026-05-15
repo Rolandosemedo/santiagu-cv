@@ -11,6 +11,8 @@ import { paymentRoutes } from "./routes/payments";
 import { bookingRoutes } from "./routes/bookings";
 import { authRoutes } from "./routes/auth";
 
+(async () => {
+
 // ─── Fastify instance ─────────────────────────────────────
 const app = Fastify({
   logger: {
@@ -113,5 +115,4 @@ try {
   app.log.error(err);
   process.exit(1);
 }
-
-export { app };
+})();
