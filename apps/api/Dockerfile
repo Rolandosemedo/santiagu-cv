@@ -5,7 +5,6 @@ COPY tsconfig*.json ./
 COPY package*.json ./
 COPY apps/api/package*.json ./apps/api/
 
-# Instalar apenas as deps da API directamente
 WORKDIR /app/apps/api
 RUN npm install
 
@@ -13,7 +12,7 @@ WORKDIR /app
 COPY apps/api/ ./apps/api/
 
 WORKDIR /app/apps/api
-RUN npm run build
+RUN npx tsc -p tsconfig.json --outDir dist
 
 FROM node:20-alpine
 WORKDIR /app/apps/api
