@@ -9,6 +9,9 @@ import { Navbar } from "@/components/ui/Navbar";
 import { CATEGORIES } from "@/lib/types";
 import { fetchPlace, MOCK_PLACES } from "@/lib/api";
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface Props {
   params: Promise<{ id: string }>;
 }
