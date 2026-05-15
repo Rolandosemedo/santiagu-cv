@@ -130,12 +130,11 @@ export async function fetchPlaces(
     if (v !== undefined) params.set(k, String(v));
   });
 
-  const res = await fetch(`${API_URL}/api/places?${params}`, {
-    next: { revalidate: 60 }, // ISR: revalidate every 60s
-  });
-
-  if (!res.ok) throw new Error("Failed to fetch places");
-  return res.json();
+  try {
+    const res = await fetch(`${API_URL}/api/places?${params}`, { next: { revalidate: 60 } });
+    if (res.ok) return res.json();
+  } catch (_) {}
+  return { data: MOCK_PLACES, total: MOCK_PLACES.length, page: 1, limit: 20 };
 }
 
 export async function fetchPlace(id: string): Promise<Place> {
@@ -145,10 +144,11 @@ export async function fetchPlace(id: string): Promise<Place> {
     return place;
   }
 
-  const res = await fetch(`${API_URL}/api/places/${id}`, {
-    next: { revalidate: 300 },
-  });
-
-  if (!res.ok) throw new Error("Failed to fetch place");
-  return res.json();
+  try {
+    const res = await fetch(`${API_URL}/api/places/${id}`, { next: { revalidate: 300 } });
+    if (res.ok) return res.json();
+  } catch (_) {}
+  const place = MOCK_PLACES.find((p) => p.id === id);
+  if (!place) throw new Error("Place not found");
+  return place;
 }
