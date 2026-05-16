@@ -12,7 +12,7 @@ import type { CategorySlug } from "@/lib/types";
 type ViewMode = "grid" | "map";
 
 export default function ExplorarPage() {
-    const searchParams = useSearchParams();
+    const searchParams = useSearchParams()
     const router = useRouter();
 
   const [query, setQuery] = useState("");
@@ -60,7 +60,7 @@ export default function ExplorarPage() {
         <div className="min-h-screen bg-white">
               <Navbar />
         
-          {/* ── Header ─────────────────────────────────────── */}
+            {/* Header */}
               <div className="border-b border-ocean/8 bg-white sticky top-16 z-40 px-4 sm:px-6 py-4">
                       <div className="max-w-7xl mx-auto space-y-3">
                         {/* Search + controls */}
