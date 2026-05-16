@@ -10,7 +10,8 @@ import { CATEGORIES } from "@/lib/types";
 import { fetchPlace, MOCK_PLACES } from "@/lib/api";
 
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 0
+export const dynamicParams = true;
 
 interface Props {
   params: Promise<{ id: string }>;
