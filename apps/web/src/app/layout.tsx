@@ -25,6 +25,10 @@ export const metadata: Metadata = {
   description:
     "A plataforma completa para descobrir, explorar e reservar restaurantes, praias, eventos, alojamento e muito mais na Ilha de Santiago, Cabo Verde.",
   keywords: ["Santiago", "Cabo Verde", "turismo", "Praia", "Tarrafal", "restaurantes", "praias"],
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+  },
   openGraph: {
     title: "Santi'Águ.cv",
     description: "Descobre tudo na Ilha de Santiago, Cabo Verde.",

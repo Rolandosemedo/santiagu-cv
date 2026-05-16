@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="8" fill="#0B2E4A"/>
+  <!-- Wave 1 – areia/dourado -->
+  <path d="M3 17 C6.5 13 9.5 21 13 17 C16.5 13 19.5 21 23 17 C26.5 13 29.5 21 33 17"
+        stroke="#F2C67D" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Wave 2 – oceano -->
+  <path d="M3 23 C6.5 19 9.5 27 13 23 C16.5 19 19.5 27 23 23 C26.5 19 29.5 27 33 23"
+        stroke="#1A8FBF" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>

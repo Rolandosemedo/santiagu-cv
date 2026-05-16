@@ -73,10 +73,16 @@ export default async function PlacePage({ params }: Props) {
 
         {/* Actions */}
         <div className="absolute top-4 right-4 flex gap-2">
-          <button className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-card hover:bg-white transition-all">
+          <button
+            aria-label="Guardar nos favoritos"
+            className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-card hover:bg-white transition-all"
+          >
             <Heart className="w-4 h-4 text-ocean-dark" />
           </button>
-          <button className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-card hover:bg-white transition-all">
+          <button
+            aria-label="Partilhar"
+            className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-card hover:bg-white transition-all"
+          >
             <Share2 className="w-4 h-4 text-ocean-dark" />
           </button>
         </div>

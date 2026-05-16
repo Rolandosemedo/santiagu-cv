@@ -58,6 +58,7 @@ export function Navbar() {
           className="md:hidden p-2 rounded-full hover:bg-ocean/5 transition-all"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Menu"
+          aria-expanded={mobileOpen}
         >
           {mobileOpen ? (
             <X className="w-5 h-5 text-ocean-dark" />

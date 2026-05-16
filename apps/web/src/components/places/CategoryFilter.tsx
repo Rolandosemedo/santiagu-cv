@@ -14,6 +14,7 @@ export function CategoryFilter({ selected, onChange }: CategoryFilterProps) {
       {/* All */}
       <button
         onClick={() => onChange(null)}
+        aria-pressed={!selected}
         className={cn(
           "category-pill whitespace-nowrap shrink-0",
           !selected
@@ -30,6 +31,7 @@ export function CategoryFilter({ selected, onChange }: CategoryFilterProps) {
           <button
             key={cat.slug}
             onClick={() => onChange(isActive ? null : cat.slug)}
+            aria-pressed={isActive}
             className="category-pill whitespace-nowrap shrink-0"
             style={
               isActive

@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Design Tokens ────────────────────────────────────── */
 :root {
     --ocean: #0B5E8A;
     --ocean-light: #1A8FBF;
@@ -23,41 +24,51 @@ body {
     color: var(--ocean-dark);
 }
 
+/* ─── Scrollbar ─────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(11,94,138,0.3); border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(11,94,138,0.5); }
 
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+
+/* ─── Typography ───────────────────────────────────────── */
 h1, h2, h3, h4, h5 { font-family: var(--font-syne); }
 
+/* ─── Components ───────────────────────────────────────── */
 @layer components {
     .btn-primary {
-          @apply inline-flex items-center gap-2 bg-ocean text-white font-display font-semibold px-5 py-2.5 rounded-full text-sm transition-all duration-200 hover:bg-ocean-dark active:scale-95;
+        @apply inline-flex items-center gap-2 bg-ocean text-white font-display font-semibold px-5 py-2.5 rounded-full text-sm transition-all duration-200 hover:bg-ocean-dark active:scale-95;
     }
     .btn-secondary {
-          @apply inline-flex items-center gap-2 bg-white text-ocean border border-ocean/20 font-display font-semibold px-5 py-2.5 rounded-full text-sm transition-all duration-200 hover:border-ocean/40 active:scale-95;
+        @apply inline-flex items-center gap-2 bg-white text-ocean border border-ocean/20 font-display font-semibold px-5 py-2.5 rounded-full text-sm transition-all duration-200 hover:border-ocean/40 active:scale-95;
     }
     .card {
-          @apply bg-white rounded-3xl shadow-card border border-ocean/5 overflow-hidden transition-all duration-300 hover:shadow-card-hover hover:-translate-y-0.5;
-      }
-        .category-pill {
-              @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-display font-semibold border transition-all duration-200 cursor-pointer;
-        }
+        @apply bg-white rounded-3xl shadow-card border border-ocean/5 overflow-hidden transition-all duration-300 hover:shadow-card-hover hover:-translate-y-0.5;
+    }
+    .category-pill {
+        @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-display font-semibold border transition-all duration-200 cursor-pointer;
+    }
     .skeleton {
-          @apply bg-gradient-to-r from-sand-light via-white to-sand-light bg-[length:200%_100%] animate-shimmer rounded-xl;
+        @apply bg-gradient-to-r from-sand-light via-white to-sand-light bg-[length:200%_100%] animate-shimmer rounded-xl;
     }
 }
 
+/* ─── Mapbox overrides ──────────────────────────────────── */
 .mapboxgl-popup-content { border-radius: 16px !important; box-shadow: 0 8px 32px rgba(11,46,74,0.18) !important; padding: 0 !important; border: none !important; }
 .mapboxgl-popup-tip { border-top-color: white !important; }
 .mapboxgl-ctrl-group { border-radius: 12px !important; overflow: hidden; box-shadow: 0 2px 12px rgba(11,46,74,0.12) !important; }
 
+/* ─── Animations ────────────────────────────────────────── */
 @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
 .animate-fade-up { animation: fadeUp 0.5s ease forwards; }
 .animate-fade-in { animation: fadeIn 0.4s ease forwards; }
+
+/* ─── Staggered reveal delays ───────────────────────────── */
 .delay-100 { animation-delay: 0.1s; }
 .delay-200 { animation-delay: 0.2s; }
 .delay-300 { animation-delay: 0.3s; }

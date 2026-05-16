@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ArrowRight, MapPin, Star, TrendingUp } from "lucide-react";
 import { Navbar } from "@/components/ui/Navbar";
 import { PlaceCard } from "@/components/places/PlaceCard";
+import { HeroSearch } from "@/components/ui/HeroSearch";
 import { CATEGORIES } from "@/lib/types";
 import { fetchPlaces } from "@/lib/api";
 
@@ -55,22 +56,8 @@ export default async function HomePage() {
           </p>
 
           {/* Search bar */}
-          <div className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto mb-8 animate-fade-up delay-200">
-            <div className="flex-1 relative">
-              <input
-                type="text"
-                placeholder="Onde queres ir? Ex: Tarrafal, Cachupa…"
-                className="w-full px-5 py-3.5 rounded-full text-ocean-dark font-body text-sm
-                           focus:outline-none focus:ring-2 focus:ring-sand/50 shadow-lg"
-              />
-            </div>
-            <Link
-              href="/explorar"
-              className="btn-primary bg-sand text-ocean-dark hover:bg-sand-dark px-6 py-3.5 shadow-lg"
-            >
-              Explorar
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+          <div className="animate-fade-up delay-200">
+            <HeroSearch />
           </div>
 
           {/* Stats */}
@@ -190,9 +177,13 @@ export default async function HomePage() {
             Feito com ❤️ para a Ilha de Santiago · Cabo Verde 🇨🇻
           </p>
           <div className="flex gap-4">
-            {["Sobre", "Contacto", "Privacidade"].map((item) => (
-              <Link key={item} href="#" className="text-sm font-body text-muted hover:text-ocean transition-colors">
-                {item}
+            {[
+              { label: "Sobre", href: "/sobre" },
+              { label: "Contacto", href: "/contacto" },
+              { label: "Privacidade", href: "/privacidade" },
+            ].map((item) => (
+              <Link key={item.label} href={item.href} className="text-sm font-body text-muted hover:text-ocean transition-colors">
+                {item.label}
               </Link>
             ))}
           </div>
