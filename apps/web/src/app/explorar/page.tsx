@@ -95,7 +95,7 @@ export default function ExplorarPage() {
                 <div
                   key={place.id}
                   className="animate-fade-up"
-                  style={{ animationDelay: `${Math.min(i * 0.06, 0.4)}s`, opacity: 0 }}
+                  style={{ animationDelay: `${Math.min(i * 0.06, 0.4)}s`,  }}
                 >
                   <PlaceCard place={place} variant="grid" />
                 </div>
