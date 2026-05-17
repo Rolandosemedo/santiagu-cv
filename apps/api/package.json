@@ -12,7 +12,8 @@
     "enrich:force": "tsx --env-file=.env src/scripts/enrichPlaces.ts --force",
     "enrich:all": "tsx --env-file=.env src/scripts/enrichPlaces.ts --all",
     "enrich:all:force": "tsx --env-file=.env src/scripts/enrichPlaces.ts --all --force",
-    "seed:bares-musica": "tsx --env-file=.env src/scripts/seedBaresMusicaVivo.ts"
+    "seed:bares-musica": "tsx --env-file=.env src/scripts/seedBaresMusicaVivo.ts",
+    "seed:bares2": "tsx --env-file=.env src/scripts/seedBaresMusicaVivo2.ts"
   },
   "dependencies": {
     "fastify": "^4.28.0",
