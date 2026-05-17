@@ -124,9 +124,14 @@ export default async function PlacePage({ params }: Props) {
         {place.tags && (
           <div className="flex flex-wrap gap-2 mb-8">
             {place.tags.map((tag) => (
-              <span key={tag} className="text-xs font-body bg-sand-light text-ocean-dark px-3 py-1 rounded-full">
+              <Link
+                key={tag}
+                href={`/explorar?tag=${encodeURIComponent(tag)}`}
+                className="text-xs font-body bg-sand-light text-ocean-dark px-3 py-1 rounded-full
+                           hover:bg-ocean hover:text-white transition-colors"
+              >
                 {tag}
-              </span>
+              </Link>
             ))}
           </div>
         )}
