@@ -78,7 +78,12 @@ export async function placesRoutes(fastify: FastifyInstance) {
 
     const { data, error } = await supabaseAdmin
       .from("places_with_cover")
-      .select("*")
+      .select(`
+        *,
+        photos (*),
+        reviews (id, rating, comment, created_at, users (name, avatar_url)),
+        events (*)
+      `)
       .eq("slug", slug)
       .single();
 
