@@ -103,8 +103,8 @@ async function enrichPlace(place: { id: string; name: string; address: string })
     console.warn(`     ⚠  Erro cover: ${covErr.message}`);
   }
 
-  // Fotos extra (até 4)
-  const extras = gp.photoRefs.slice(1, 5);
+  // Fotos extra (até 9)
+  const extras = gp.photoRefs.slice(1, 10);
   for (let i = 0; i < extras.length; i++) {
     await sleep(DELAY_MS);
     const url = await resolvePhotoUrl(extras[i], API_KEY);

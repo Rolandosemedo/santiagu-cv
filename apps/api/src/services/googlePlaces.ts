@@ -59,7 +59,7 @@ export async function searchGooglePlace(
   ]
     .filter(Boolean)
     .filter((ref, i, arr) => arr.indexOf(ref) === i) // dedup
-    .slice(0, 5);
+    .slice(0, 10);
 
   return {
     id: place.place_id,
