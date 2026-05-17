@@ -9,7 +9,9 @@
     "lint": "eslint src --ext .ts",
     "type-check": "tsc --noEmit",
     "enrich": "tsx --env-file=.env src/scripts/enrichPlaces.ts",
-    "enrich:force": "tsx --env-file=.env src/scripts/enrichPlaces.ts --force"
+    "enrich:force": "tsx --env-file=.env src/scripts/enrichPlaces.ts --force",
+    "enrich:all": "tsx --env-file=.env src/scripts/enrichPlaces.ts --all",
+    "enrich:all:force": "tsx --env-file=.env src/scripts/enrichPlaces.ts --all --force"
   },
   "dependencies": {
     "fastify": "^4.28.0",

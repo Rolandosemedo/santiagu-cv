@@ -2,8 +2,10 @@
  * Enriquecimento Google Places (legacy API)
  *
  * Uso:
- *   pnpm --filter @santiagu/api enrich
- *   pnpm --filter @santiagu/api enrich:force
+ *   pnpm --filter @santiagu/api enrich                        # restaurantes
+ *   pnpm --filter @santiagu/api enrich -- --category=praias  # categoria específica
+ *   pnpm --filter @santiagu/api enrich -- --all              # todas as categorias
+ *   pnpm --filter @santiagu/api enrich:force -- --all        # força re-enriquecimento
  */
 
 import { supabaseAdmin } from "../config/supabase";
@@ -16,6 +18,7 @@ const args = process.argv.slice(2);
 const categoryArg =
   args.find((a) => a.startsWith("--category="))?.split("=")[1] ?? "restaurantes";
 const force = args.includes("--force");
+const allCategories = args.includes("--all");
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -119,24 +122,16 @@ async function enrichPlace(place: { id: string; name: string; address: string })
   return { found: true, photo: true };
 }
 
-async function main() {
-  if (!API_KEY) {
-    console.error("❌  GOOGLE_PLACES_API_KEY não definida no .env");
-    process.exit(1);
-  }
-
-  console.log(`\n🗺  Enriquecimento Google Places — categoria: ${categoryArg}`);
-  console.log(`   Mode: ${force ? "FORCE (todos)" : "incremental (salta enriquecidos)"}\n`);
-
+async function enrichCategory(categorySlug: string): Promise<{ enriched: number; skipped: number; failed: number }> {
   const { data: cat } = await supabaseAdmin
     .from("categories")
     .select("id")
-    .eq("slug", categoryArg)
+    .eq("slug", categorySlug)
     .single();
 
   if (!cat) {
-    console.error(`❌  Categoria "${categoryArg}" não encontrada`);
-    process.exit(1);
+    console.error(`❌  Categoria "${categorySlug}" não encontrada`);
+    return { enriched: 0, skipped: 0, failed: 0 };
   }
 
   const { data: places, error } = await supabaseAdmin
@@ -148,7 +143,7 @@ async function main() {
 
   if (error) {
     console.error("❌  Erro a ler locais:", error.message);
-    process.exit(1);
+    return { enriched: 0, skipped: 0, failed: 0 };
   }
 
   console.log(`📍 ${places?.length ?? 0} locais encontrados\n`);
@@ -163,11 +158,64 @@ async function main() {
     await sleep(DELAY_MS);
   }
 
-  const line = "─".repeat(50);
-  console.log(`\n${line}`);
-  console.log(
-    `✅ Concluído — ${enriched} enriquecidos | ${skipped} saltados | ${failed} sem dados`
-  );
+  return { enriched, skipped, failed };
+}
+
+async function main() {
+  if (!API_KEY) {
+    console.error("❌  GOOGLE_PLACES_API_KEY não definida no .env");
+    process.exit(1);
+  }
+
+  const mode = force ? "FORCE (todos)" : "incremental (salta enriquecidos)";
+
+  if (allCategories) {
+    console.log(`\n🗺  Enriquecimento Google Places — TODAS AS CATEGORIAS`);
+    console.log(`   Mode: ${mode}\n`);
+
+    const { data: cats, error } = await supabaseAdmin
+      .from("categories")
+      .select("slug")
+      .order("slug");
+
+    if (error || !cats?.length) {
+      console.error("❌  Erro a ler categorias:", error?.message ?? "nenhuma encontrada");
+      process.exit(1);
+    }
+
+    console.log(`📂 ${cats.length} categorias encontradas: ${cats.map((c) => c.slug).join(", ")}\n`);
+
+    let totalEnriched = 0, totalSkipped = 0, totalFailed = 0;
+
+    for (const cat of cats) {
+      const line = "─".repeat(50);
+      console.log(`\n${line}`);
+      console.log(`📂 Categoria: ${cat.slug}`);
+      console.log(line);
+
+      const { enriched, skipped, failed } = await enrichCategory(cat.slug);
+      totalEnriched += enriched;
+      totalSkipped += skipped;
+      totalFailed += failed;
+
+      console.log(`   Categoria "${cat.slug}": ${enriched} enriquecidos | ${skipped} saltados | ${failed} sem dados`);
+    }
+
+    const line = "═".repeat(50);
+    console.log(`\n${line}`);
+    console.log(`✅ TOTAL — ${totalEnriched} enriquecidos | ${totalSkipped} saltados | ${totalFailed} sem dados`);
+    console.log(line);
+
+  } else {
+    console.log(`\n🗺  Enriquecimento Google Places — categoria: ${categoryArg}`);
+    console.log(`   Mode: ${mode}\n`);
+
+    const { enriched, skipped, failed } = await enrichCategory(categoryArg);
+
+    const line = "─".repeat(50);
+    console.log(`\n${line}`);
+    console.log(`✅ Concluído — ${enriched} enriquecidos | ${skipped} saltados | ${failed} sem dados`);
+  }
 }
 
 main().catch((err) => {
