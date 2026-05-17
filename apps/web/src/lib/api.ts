@@ -137,18 +137,24 @@ export async function fetchPlaces(
   return { data: MOCK_PLACES, total: MOCK_PLACES.length, page: 1, limit: 20 };
 }
 
-export async function fetchPlace(id: string): Promise<Place> {
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export async function fetchPlace(idOrSlug: string): Promise<Place> {
   if (!process.env.NEXT_PUBLIC_API_URL) {
-    const place = MOCK_PLACES.find((p) => p.id === id);
+    const place = MOCK_PLACES.find((p) => p.id === idOrSlug || p.slug === idOrSlug);
     if (!place) throw new Error("Place not found");
     return place;
   }
 
+  const url = UUID_RE.test(idOrSlug)
+    ? `${API_URL}/api/places/${idOrSlug}`
+    : `${API_URL}/api/places/slug/${idOrSlug}`;
+
   try {
-    const res = await fetch(`${API_URL}/api/places/${id}`, { next: { revalidate: 300 } });
+    const res = await fetch(url, { next: { revalidate: 300 } });
     if (res.ok) return res.json();
   } catch (_) {}
-  const place = MOCK_PLACES.find((p) => p.id === id);
+  const place = MOCK_PLACES.find((p) => p.id === idOrSlug || p.slug === idOrSlug);
   if (!place) throw new Error("Place not found");
   return place;
 }

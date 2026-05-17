@@ -42,7 +42,7 @@ export function PlaceCard({ place, variant = "grid", className }: PlaceCardProps
 
   if (variant === "compact") {
     return (
-      <Link href={`/place/${place.id}`}>
+      <Link href={`/place/${place.slug}`}>
         <div className={cn("flex gap-3 p-3 rounded-2xl hover:bg-ocean/3 transition-all", className)}>
           <div className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0">
             <Image src={cover} alt={place.name} fill className="object-cover" sizes="64px" />
@@ -66,7 +66,7 @@ export function PlaceCard({ place, variant = "grid", className }: PlaceCardProps
 
   if (variant === "list") {
     return (
-      <Link href={`/place/${place.id}`}>
+      <Link href={`/place/${place.slug}`}>
         <div className={cn("card flex gap-4 p-4", className)}>
           <div className="relative w-24 h-24 rounded-2xl overflow-hidden shrink-0">
             <Image src={cover} alt={place.name} fill className="object-cover" sizes="96px" />
@@ -109,7 +109,7 @@ export function PlaceCard({ place, variant = "grid", className }: PlaceCardProps
 
   // Default: grid
   return (
-    <Link href={`/place/${place.id}`} className="group">
+    <Link href={`/place/${place.slug}`} className="group">
       <div className={cn("card", className)}>
         <div className="relative h-48 overflow-hidden">
           <Image
