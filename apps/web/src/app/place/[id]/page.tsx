@@ -3,10 +3,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   Star, MapPin, Phone, Clock, BadgeCheck, ArrowLeft,
-  Heart, Share2, ExternalLink
+  Heart, Share2, ExternalLink, Music, CalendarDays, Ticket, ChevronRight
 } from "lucide-react";
 import { Navbar } from "@/components/ui/Navbar";
 import { CATEGORIES } from "@/lib/types";
+import type { Event } from "@/lib/types";
 import { fetchPlace, MOCK_PLACES } from "@/lib/api";
 
 export const dynamic = 'force-dynamic';
@@ -123,16 +124,30 @@ export default async function PlacePage({ params }: Props) {
         {/* Tags */}
         {place.tags && (
           <div className="flex flex-wrap gap-2 mb-8">
-            {place.tags.map((tag) => (
-              <Link
-                key={tag}
-                href={`/explorar?tag=${encodeURIComponent(tag)}`}
-                className="text-xs font-body bg-sand-light text-ocean-dark px-3 py-1 rounded-full
-                           hover:bg-ocean hover:text-white transition-colors"
-              >
-                {tag}
-              </Link>
-            ))}
+            {place.tags.map((tag) =>
+              tag === "Música ao Vivo" ? (
+                <a
+                  key={tag}
+                  href="#agenda"
+                  className="inline-flex items-center gap-1.5 text-xs font-body
+                             bg-violet-100 text-violet-700 border border-violet-200
+                             px-3 py-1 rounded-full hover:bg-violet-600 hover:text-white
+                             hover:border-violet-600 transition-colors"
+                >
+                  <Music className="w-3 h-3" />
+                  {tag}
+                </a>
+              ) : (
+                <Link
+                  key={tag}
+                  href={`/explorar?tag=${encodeURIComponent(tag)}`}
+                  className="text-xs font-body bg-sand-light text-ocean-dark px-3 py-1 rounded-full
+                             hover:bg-ocean hover:text-white transition-colors"
+                >
+                  {tag}
+                </Link>
+              )
+            )}
           </div>
         )}
 
@@ -177,6 +192,83 @@ export default async function PlacePage({ params }: Props) {
             </div>
           )}
         </div>
+
+        {/* ── Agenda / Eventos ─────────────────────────── */}
+        {place.tags?.includes("Música ao Vivo") && (
+          <section id="agenda" className="mb-8 scroll-mt-24">
+            <div className="flex items-center gap-2 mb-4">
+              <Music className="w-5 h-5 text-violet-600" />
+              <h2 className="font-display font-bold text-ocean-dark text-xl">Agenda</h2>
+            </div>
+
+            {(place.events ?? []).length > 0 ? (
+              <div className="space-y-3">
+                {(place.events as Event[])
+                  .filter((e) => new Date(e.starts_at) >= new Date())
+                  .sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime())
+                  .map((event) => {
+                    const date = new Date(event.starts_at);
+                    const day = date.toLocaleDateString("pt-PT", { weekday: "short", day: "numeric", month: "short" });
+                    const time = date.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" });
+                    const typeLabel: Record<string, string> = {
+                      concerto: "Concerto", festival: "Festival",
+                      exposicao: "Exposição", outro: "Evento",
+                    };
+                    return (
+                      <div key={event.id} className="card p-4 flex gap-4 items-start">
+                        <div className="shrink-0 w-14 text-center bg-violet-50 rounded-xl p-2 border border-violet-100">
+                          <p className="text-xs font-body text-violet-500 uppercase">
+                            {date.toLocaleDateString("pt-PT", { month: "short" })}
+                          </p>
+                          <p className="font-display font-bold text-violet-700 text-xl leading-none">
+                            {date.getDate()}
+                          </p>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-display font-semibold text-ocean-dark text-sm mb-1">{event.title}</p>
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-body text-muted">
+                            <span className="flex items-center gap-1">
+                              <CalendarDays className="w-3 h-3" />
+                              {day} · {time}
+                            </span>
+                            <span className="text-violet-600 font-medium">{typeLabel[event.type] ?? "Evento"}</span>
+                            {event.price_cve === 0 ? (
+                              <span className="text-verde font-medium">Entrada livre</span>
+                            ) : (
+                              <span className="flex items-center gap-1">
+                                <Ticket className="w-3 h-3" />
+                                {event.price_cve.toLocaleString("pt-PT")} CVE
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-muted shrink-0 mt-1" />
+                      </div>
+                    );
+                  })}
+              </div>
+            ) : (
+              <div className="rounded-2xl border-2 border-dashed border-violet-200 bg-violet-50/40 p-8 text-center">
+                <div className="text-4xl mb-3">🎶</div>
+                <p className="font-display font-semibold text-ocean-dark mb-1">
+                  Sem eventos agendados
+                </p>
+                <p className="font-body text-sm text-muted mb-4">
+                  Este local ainda não publicou a sua agenda.
+                  <br />
+                  És o proprietário? Adiciona os teus próximos eventos.
+                </p>
+                <a
+                  href="mailto:agenda@santiagu.cv"
+                  className="inline-flex items-center gap-2 text-sm font-body font-medium
+                             text-violet-700 hover:text-violet-900 underline underline-offset-2"
+                >
+                  Publicar a minha agenda
+                </a>
+              </div>
+            )}
+          </section>
+        )}
 
         {/* CTA */}
         <div className="flex gap-3">

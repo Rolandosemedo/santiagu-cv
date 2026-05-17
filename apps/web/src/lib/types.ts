@@ -29,6 +29,7 @@ export interface Place {
   price_level?: 1 | 2 | 3 | 4; // 1=€ … 4=€€€€
   opening_hours?: Record<string, string>;
   tags?: string[];
+  events?: Event[];
 }
 
 export interface Event {
