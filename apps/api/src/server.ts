@@ -10,6 +10,7 @@ import { placesRoutes } from "./routes/places";
 import { paymentRoutes } from "./routes/payments";
 import { bookingRoutes } from "./routes/bookings";
 import { authRoutes } from "./routes/auth";
+import { adminRoutes } from "./routes/admin";
 
 (async () => {
 
@@ -88,6 +89,7 @@ import { authRoutes } from "./routes/auth";
   await app.register(placesRoutes, { prefix: "/api" });
   await app.register(bookingRoutes, { prefix: "/api" });
   await app.register(paymentRoutes, { prefix: "/api" });
+  await app.register(adminRoutes, { prefix: "/api" });
 
  // ─── Error handler ────────────────────────────────────────
  app.setErrorHandler((err, _req, reply) => {

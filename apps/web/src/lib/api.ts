@@ -99,8 +99,8 @@ export const MOCK_PLACES: Place[] = [
 export async function fetchPlaces(
   filters: PlacesFilters = {}
 ): Promise<PlacesResponse> {
-  // In dev, return mock data filtered
-  if (process.env.NODE_ENV === "development") {
+  // Usar mock data apenas quando a API não está configurada
+  if (!process.env.NEXT_PUBLIC_API_URL) {
     let data = [...MOCK_PLACES];
 
     if (filters.category) {
@@ -124,7 +124,7 @@ export async function fetchPlaces(
     return { data, total: data.length, page: 1, limit: 20 };
   }
 
-  // Production: call real API
+  // API configurada: chamar sempre, dev ou produção
   const params = new URLSearchParams();
   Object.entries(filters).forEach(([k, v]) => {
     if (v !== undefined) params.set(k, String(v));
@@ -138,7 +138,7 @@ export async function fetchPlaces(
 }
 
 export async function fetchPlace(id: string): Promise<Place> {
-  if (process.env.NODE_ENV === "development") {
+  if (!process.env.NEXT_PUBLIC_API_URL) {
     const place = MOCK_PLACES.find((p) => p.id === id);
     if (!place) throw new Error("Place not found");
     return place;

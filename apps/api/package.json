@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "tsx watch --env-file=.env src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "lint": "eslint src --ext .ts",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "enrich": "tsx --env-file=.env src/scripts/enrichPlaces.ts",
+    "enrich:force": "tsx --env-file=.env src/scripts/enrichPlaces.ts --force"
   },
   "dependencies": {
     "fastify": "^4.28.0",
