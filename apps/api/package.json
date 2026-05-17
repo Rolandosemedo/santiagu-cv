@@ -13,7 +13,8 @@
     "enrich:all": "tsx --env-file=.env src/scripts/enrichPlaces.ts --all",
     "enrich:all:force": "tsx --env-file=.env src/scripts/enrichPlaces.ts --all --force",
     "seed:bares-musica": "tsx --env-file=.env src/scripts/seedBaresMusicaVivo.ts",
-    "seed:bares2": "tsx --env-file=.env src/scripts/seedBaresMusicaVivo2.ts"
+    "seed:bares2": "tsx --env-file=.env src/scripts/seedBaresMusicaVivo2.ts",
+    "unsplash:covers": "tsx --env-file=.env src/scripts/addUnsplashCovers.ts"
   },
   "dependencies": {
     "fastify": "^4.28.0",
