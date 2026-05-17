@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   Star, MapPin, Phone, Clock, BadgeCheck, ArrowLeft,
-  Heart, Share2, ExternalLink, Music, CalendarDays, Ticket, ChevronRight
+  Heart, Share2, ExternalLink, Music, CalendarDays, Ticket, ChevronRight, Globe
 } from "lucide-react";
 import { Navbar } from "@/components/ui/Navbar";
 import { CATEGORIES } from "@/lib/types";
@@ -275,6 +275,17 @@ export default async function PlacePage({ params }: Props) {
           <button className="btn-primary flex-1 justify-center py-3.5">
             Fazer Reserva
           </button>
+          {place.website && (
+            <a
+              href={place.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-secondary px-5 py-3.5"
+            >
+              <Globe className="w-4 h-4" />
+              Visitar Website
+            </a>
+          )}
           <a
             href={`https://maps.google.com/?q=${place.lat},${place.lng}`}
             target="_blank"

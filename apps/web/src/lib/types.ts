@@ -25,6 +25,7 @@ export interface Place {
   review_count: number;
   cover_url: string;
   phone?: string;
+  website?: string;
   verified: boolean;
   price_level?: 1 | 2 | 3 | 4; // 1=€ … 4=€€€€
   opening_hours?: Record<string, string>;
