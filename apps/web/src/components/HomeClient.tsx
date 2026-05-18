@@ -268,14 +268,21 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
                 strokeLinejoin="round" strokeLinecap="round"
               />
 
-              {/* 5 stars above title zone — outside red line (x = contourX − 22) */}
-              {([[-5,15],[0,70],[4,125],[-10,180],[-4,235]] as [number,number][]).map(([x,y]) => (
+              {/*
+               * Title is 20vw; on 1440px desktop that is 288px → spans y=106–394.
+               * Stars above stop at y=85 (safe margin above y=106 on any screen).
+               * Stars below start at y=405 (safe margin below y=394 on any screen).
+               * x = interpolated contourX − 22 (right edge outside red line).
+               */}
+
+              {/* 5 stars above title zone — y=8→85 */}
+              {([[0,8],[2,28],[-12,48],[-1,68],[0,85]] as [number,number][]).map(([x,y]) => (
                 <text key={`sa-${y}`} x={x} y={y}
                   fontSize="13" fill="#FFD700" textAnchor="end" dominantBaseline="middle">★</text>
               ))}
 
-              {/* 5 stars below title zone */}
-              {([[-12,270],[-5,320],[32,370],[47,420],[99,470]] as [number,number][]).map(([x,y]) => (
+              {/* 5 stars below title zone — y=405→478 */}
+              {([[34,405],[52,425],[71,445],[86,462],[114,478]] as [number,number][]).map(([x,y]) => (
                 <text key={`sb-${y}`} x={x} y={y}
                   fontSize="13" fill="#FFD700" textAnchor="end" dominantBaseline="middle">★</text>
               ))}
