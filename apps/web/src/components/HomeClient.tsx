@@ -238,23 +238,30 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
           opacity: phase === "opening" ? 0 : 1,
           transition: phase === "opening" ? "opacity 0.15s ease" : "none",
         }}>
-          {/* Island + title */}
-          <div style={{ position: "relative", width: 300, height: 500 }}>
+          {/* Island silhouette */}
+          <div style={{ position: "relative", width: 300, height: 500, flexShrink: 0 }}>
             <svg width="300" height="500" viewBox="0 0 300 500"
               fill="none" aria-hidden="true"
               style={{ position: "absolute", inset: 0 }}>
               <path d={SANTIAGO_PATH} fill="white" opacity="0.16" />
             </svg>
-            <p style={{
-              position: "absolute", top: 233, left: 38, width: 224, margin: 0,
-              fontFamily: "Georgia, 'Times New Roman', serif",
-              fontWeight: 300, fontSize: 44, lineHeight: 1,
-              color: "#fff", whiteSpace: "nowrap",
-              animation: "fadeIn 2.6s ease forwards", opacity: 0,
-            }}>
-              Santi&apos;Águ
-            </p>
           </div>
+
+          {/* Large title — centred over the full viewport width */}
+          <p style={{
+            position: "absolute",
+            top: "50%", left: 0, right: 0,
+            transform: "translateY(-50%)",
+            margin: 0, padding: "0 2vw",
+            fontFamily: "Georgia, 'Times New Roman', serif",
+            fontWeight: 300, fontSize: "18vw", lineHeight: 1,
+            color: "#fff", whiteSpace: "nowrap",
+            textAlign: "center",
+            animation: "fadeIn 2.6s ease forwards", opacity: 0,
+            pointerEvents: "none",
+          }}>
+            Santi&apos;Águ
+          </p>
 
           {/* Portal button */}
           <button onClick={enter} aria-label="Entra na ilha"
@@ -305,14 +312,17 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
           }}>
             <DoorPanel side="left" open={doorsOpen} />
             <p style={{
-              position: "absolute", top: "50%", right: 0,
+              position: "absolute",
+              top: "50%", right: 0,
               transform: "translateY(-50%)",
-              margin: 0, paddingRight: 6,
+              margin: 0, padding: 0,
               fontFamily: "Georgia, 'Times New Roman', serif",
-              fontWeight: 300, fontSize: 44, lineHeight: 1,
+              fontWeight: 300, fontSize: "18vw", lineHeight: 1,
               color: "rgba(255,255,255,0.95)",
               whiteSpace: "nowrap", userSelect: "none", pointerEvents: "none",
               textAlign: "right",
+              opacity: doorsOpen ? 0 : 1,
+              transition: doorsOpen ? "opacity 1s ease 0.4s" : "none",
             }}>
               Santi&apos;
             </p>
@@ -331,13 +341,16 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
           }}>
             <DoorPanel side="right" open={doorsOpen} />
             <p style={{
-              position: "absolute", top: "50%", left: 0,
+              position: "absolute",
+              top: "50%", left: 0,
               transform: "translateY(-50%)",
-              margin: 0, paddingLeft: 6,
+              margin: 0, padding: 0,
               fontFamily: "Georgia, 'Times New Roman', serif",
-              fontWeight: 300, fontSize: 44, lineHeight: 1,
+              fontWeight: 300, fontSize: "18vw", lineHeight: 1,
               color: "rgba(255,255,255,0.95)",
               whiteSpace: "nowrap", userSelect: "none", pointerEvents: "none",
+              opacity: doorsOpen ? 0 : 1,
+              transition: doorsOpen ? "opacity 1s ease 0.4s" : "none",
             }}>
               Águ
             </p>
