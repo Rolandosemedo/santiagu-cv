@@ -240,42 +240,51 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
         }}>
           {/* Island silhouette + Cape Verde flag elements */}
           <div style={{ position: "relative", width: 300, height: 500, flexShrink: 0 }}>
+            {/*
+             * overflow="visible" lets lines/stars extend left of the SVG box
+             * Left contour points used for interpolation:
+             *   (25,4)(13,21)(28,31)(7,46)(21,54)(22,87)(34,90)(38,113)
+             *   (22,129)(25,151)(16,177)(8,183)(18,237)(11,251)(13,267)
+             *   (0,279)(3,307)(15,312)(25,347)(44,352)(54,365)(51,400)
+             *
+             * White polyline = contourX - 8
+             * Red  polyline = contourX - 14
+             * Stars textAnchor="end" at x=contourX (right edge touches contour)
+             * Title zone centre ≈ y=250 in the 500px island div
+             */}
             <svg width="300" height="500" viewBox="0 0 300 500"
-              fill="none" aria-hidden="true"
+              fill="none" aria-hidden="true" overflow="visible"
               style={{ position: "absolute", inset: 0 }}>
+
+              {/* Island silhouette */}
               <path d={SANTIAGO_PATH} fill="white" opacity="0.16" />
+
+              {/* White line — left contour offset -8px */}
+              <polyline
+                points="17,4 5,21 20,31 -1,46 13,54 14,87 26,90 30,113 14,129 17,151 8,177 0,183 10,237 3,251 5,267 -8,279 -5,307 7,312 17,347 36,352 46,365 43,400"
+                stroke="rgba(255,255,255,0.65)" strokeWidth="1.5" fill="none"
+                strokeLinejoin="round" strokeLinecap="round"
+              />
+
+              {/* Red line — left contour offset -14px */}
+              <polyline
+                points="11,4 -1,21 14,31 -7,46 7,54 8,87 20,90 24,113 8,129 11,151 2,177 -6,183 4,237 -3,251 -1,267 -14,279 -11,307 1,312 11,347 30,352 40,365 37,400"
+                stroke="rgba(205,32,44,0.75)" strokeWidth="1.5" fill="none"
+                strokeLinejoin="round" strokeLinecap="round"
+              />
+
+              {/* 5 stars above title zone — right edge at contour x, centred vertically */}
+              {([[17,15],[22,70],[26,125],[12,180],[18,235]] as [number,number][]).map(([x,y]) => (
+                <text key={`sa-${y}`} x={x} y={y}
+                  fontSize="11" fill="#FFD700" textAnchor="end" dominantBaseline="middle">★</text>
+              ))}
+
+              {/* 5 stars below title zone */}
+              {([[13,265],[2,298],[20,330],[52,362],[51,395]] as [number,number][]).map(([x,y]) => (
+                <text key={`sb-${y}`} x={x} y={y}
+                  fontSize="11" fill="#FFD700" textAnchor="end" dominantBaseline="middle">★</text>
+              ))}
             </svg>
-
-            {/* White vertical line — flush to island left edge */}
-            <div aria-hidden="true" style={{
-              position: "absolute", top: 0, bottom: 0,
-              left: -9, width: 1.5,
-              background: "rgba(255,255,255,0.65)",
-            }} />
-            {/* Red vertical line — parallel, just left of white */}
-            <div aria-hidden="true" style={{
-              position: "absolute", top: 0, bottom: 0,
-              left: -14, width: 1.5,
-              background: "rgba(205,32,44,0.75)",
-            }} />
-
-            {/* 5 stars above the title zone (top half of island) */}
-            {[30, 82, 134, 186, 218].map((y) => (
-              <span key={`star-top-${y}`} aria-hidden="true" style={{
-                position: "absolute", top: y, left: -26,
-                fontSize: 12, lineHeight: 1, color: "#FFD700",
-                userSelect: "none", pointerEvents: "none",
-              }}>★</span>
-            ))}
-
-            {/* 5 stars below the title zone (bottom half of island) */}
-            {[282, 322, 370, 422, 470].map((y) => (
-              <span key={`star-bot-${y}`} aria-hidden="true" style={{
-                position: "absolute", top: y, left: -26,
-                fontSize: 12, lineHeight: 1, color: "#FFD700",
-                userSelect: "none", pointerEvents: "none",
-              }}>★</span>
-            ))}
           </div>
 
           {/* Large title — centred over the full viewport width */}
