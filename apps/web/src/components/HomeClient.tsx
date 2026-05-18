@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, TrendingUp } from "lucide-react";
 import { Navbar } from "@/components/ui/Navbar";
@@ -195,22 +195,27 @@ function DoorPanel({ side, open }: { side: "left" | "right"; open: boolean }) {
   );
 }
 
-/* ── Left contour interpolation ──────────────────────────── */
-const LEFT_CONTOUR: [number, number][] = [
-  [25,4],[13,21],[28,31],[7,46],[21,54],[22,87],[34,90],[38,113],
-  [22,129],[25,151],[16,177],[8,183],[18,237],[11,251],[13,267],
-  [0,279],[3,307],[15,312],[25,347],[44,352],[54,365],[51,400],
-  [111,465],[140,480],
+/* ── Flag star positions — static, contourX(y) − 20px ───────
+ * y values = fixed % of 500px viewBox. x = left contour x − 20.
+ * Above: 5%, 16%, 27%, 38%, 49%  →  y = 25, 80, 135, 190, 245
+ * Below: 61%, 72%, 83%, 94%, ~100% →  y = 305, 360, 415, 470, 478
+ * contourX interpolated from path left edge at each y.
+ * ─────────────────────────────────────────────────────────── */
+const STARS_ABOVE: [number, number][] = [
+  // [x, y]  contourX(y) − 20
+  [-1,  25],   // y=25:  contourX≈19
+  [ 2,  80],   // y=80:  contourX≈22
+  [ 3, 135],   // y=135: contourX≈23
+  [-11, 190],  // y=190: contourX≈9
+  [-6,  245],  // y=245: contourX≈14
 ];
-function getContourX(y: number): number {
-  if (y <= LEFT_CONTOUR[0][1]) return LEFT_CONTOUR[0][0];
-  for (let i = 0; i < LEFT_CONTOUR.length - 1; i++) {
-    const [x0, y0] = LEFT_CONTOUR[i];
-    const [x1, y1] = LEFT_CONTOUR[i + 1];
-    if (y <= y1) return x0 + ((y - y0) / (y1 - y0)) * (x1 - x0);
-  }
-  return LEFT_CONTOUR[LEFT_CONTOUR.length - 1][0];
-}
+const STARS_BELOW: [number, number][] = [
+  [-13, 305],  // y=305: contourX≈7  (clamped from −17 for narrow screens)
+  [ 30, 360],  // y=360: contourX≈50
+  [ 45, 415],  // y=415: contourX≈65
+  [101, 470],  // y=470: contourX≈121
+  [116, 478],  // y=478: contourX≈136
+];
 
 /* ═══════════════════════════════════════════════════════════
    HOME CLIENT
@@ -220,29 +225,8 @@ type Phase = "hero" | "opening" | "done";
 export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
   const [phase, setPhase] = useState<Phase>("hero");
   const [doorsOpen, setDoorsOpen] = useState(false);
-  /* winW starts at 390 on both server and client (same → no hydration mismatch).
-     useEffect immediately sets the real value after mount. */
-  const [winW, setWinW] = useState(390);
-  useEffect(() => {
-    setWinW(window.innerWidth);
-    const onResize = () => setWinW(window.innerWidth);
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
-
-  /* Title is 20vw centred at y=250 in the 500px island div. */
-  const titleHalf = winW * 0.10;
-  const titleTop  = Math.max(4,   250 - titleHalf);
-  const titleBot  = Math.min(478, 250 + titleHalf);
-  /* Clamp x ≥ -25 so no star drifts fully off-screen on any device. */
-  const starsAbove: [number, number][] = Array.from({ length: 5 }, (_, i) => {
-    const y = 4 + (i / 4) * (titleTop - 4);
-    return [Math.max(getContourX(y) - 22, -25), y];
-  });
-  const starsBelow: [number, number][] = Array.from({ length: 5 }, (_, i) => {
-    const y = titleBot + (i / 4) * (478 - titleBot);
-    return [Math.max(getContourX(y) - 22, -25), y];
-  });
+  const starsAbove = STARS_ABOVE;
+  const starsBelow = STARS_BELOW;
 
   function enter() {
     if (phase !== "hero") return;
@@ -308,15 +292,15 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
                 strokeLinejoin="round" strokeLinecap="round"
               />
 
-              {/* 5 stars above — y=4 → titleTop, uniform spacing, computed from winW */}
+              {/* 5 stars above title (5%–49% of island height) */}
               {starsAbove.map(([x, y]) => (
-                <text key={`sa-${y.toFixed(1)}`} x={x} y={y}
+                <text key={`sa-${y}`} x={x} y={y}
                   fontSize="13" fill="#FFD700" textAnchor="end" dominantBaseline="middle">★</text>
               ))}
 
-              {/* 5 stars below — y=titleBot → 478, uniform spacing */}
+              {/* 5 stars below title (61%–100% of island height) */}
               {starsBelow.map(([x, y]) => (
-                <text key={`sb-${y.toFixed(1)}`} x={x} y={y}
+                <text key={`sb-${y}`} x={x} y={y}
                   fontSize="13" fill="#FFD700" textAnchor="end" dominantBaseline="middle">★</text>
               ))}
             </svg>
