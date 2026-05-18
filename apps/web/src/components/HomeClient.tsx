@@ -213,7 +213,7 @@ const STARS_BELOW: [number, number][] = [
   [-13, 305],  // y=305: contourX≈7  (clamped from −17 for narrow screens)
   [ 30, 360],  // y=360: contourX≈50
   [ 45, 415],  // y=415: contourX≈65
-  [ 59, 430],  // y=430 (86%): contourX≈79
+  [ 82, 455],  // y=455 = (415+495)/2: contourX≈102
   [120, 495],  // y=495 (99%): contourX capped at 140 (last contour point)
 ];
 
