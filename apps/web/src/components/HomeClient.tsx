@@ -220,27 +220,28 @@ type Phase = "hero" | "opening" | "done";
 export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
   const [phase, setPhase] = useState<Phase>("hero");
   const [doorsOpen, setDoorsOpen] = useState(false);
-  const [winW, setWinW] = useState(() =>
-    typeof window !== "undefined" ? window.innerWidth : 390
-  );
+  /* winW starts at 390 on both server and client (same → no hydration mismatch).
+     useEffect immediately sets the real value after mount. */
+  const [winW, setWinW] = useState(390);
   useEffect(() => {
+    setWinW(window.innerWidth);
     const onResize = () => setWinW(window.innerWidth);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  /* Title is 20vw, centred at y=250 in the 500px island div.
-     titleTop/Bot = where the title starts/ends in island coords. */
+  /* Title is 20vw centred at y=250 in the 500px island div. */
   const titleHalf = winW * 0.10;
   const titleTop  = Math.max(4,   250 - titleHalf);
   const titleBot  = Math.min(478, 250 + titleHalf);
+  /* Clamp x ≥ -25 so no star drifts fully off-screen on any device. */
   const starsAbove: [number, number][] = Array.from({ length: 5 }, (_, i) => {
     const y = 4 + (i / 4) * (titleTop - 4);
-    return [getContourX(y) - 22, y];
+    return [Math.max(getContourX(y) - 22, -25), y];
   });
   const starsBelow: [number, number][] = Array.from({ length: 5 }, (_, i) => {
     const y = titleBot + (i / 4) * (478 - titleBot);
-    return [getContourX(y) - 22, y];
+    return [Math.max(getContourX(y) - 22, -25), y];
   });
 
   function enter() {
