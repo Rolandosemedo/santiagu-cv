@@ -15,6 +15,7 @@ export type CategorySlug = (typeof CATEGORIES)[number]["slug"];
 // ─── Place types ─────────────────────────────────────────
 export interface Place {
   id: string;
+  slug: string;
   name: string;
   category_slug: CategorySlug;
   description: string;

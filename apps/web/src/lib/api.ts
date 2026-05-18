@@ -6,6 +6,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 export const MOCK_PLACES: Place[] = [
   {
     id: "1",
+    slug: "quintal-da-musica",
     name: "Restaurante Quintal da Música",
     category_slug: "restaurantes",
     description: "Gastronomia cabo-verdiana autêntica com música ao vivo ao fim de semana.",
@@ -22,6 +23,7 @@ export const MOCK_PLACES: Place[] = [
   },
   {
     id: "2",
+    slug: "praia-tarrafal",
     name: "Praia de Tarrafal",
     category_slug: "praias",
     description: "A praia mais famosa de Santiago — águas cristalinas e areia branca.",
@@ -36,6 +38,7 @@ export const MOCK_PLACES: Place[] = [
   },
   {
     id: "3",
+    slug: "cidade-velha",
     name: "Cidade Velha",
     category_slug: "historico",
     description: "Primeiro assentamento europeu nos Trópicos. Património Mundial UNESCO desde 2009.",
@@ -50,6 +53,7 @@ export const MOCK_PLACES: Place[] = [
   },
   {
     id: "4",
+    slug: "hotel-tropico",
     name: "Hotel Trópico",
     category_slug: "hoteis",
     description: "Hotel de referência em Praia com piscina e vista para o oceano.",
@@ -66,6 +70,7 @@ export const MOCK_PLACES: Place[] = [
   },
   {
     id: "5",
+    slug: "bar-cafe-mindelo",
     name: "Bar Café Mindelo",
     category_slug: "bares",
     description: "Cocktails tropicais e ambiente descontraído no coração de Praia.",
@@ -81,6 +86,7 @@ export const MOCK_PLACES: Place[] = [
   },
   {
     id: "6",
+    slug: "festival-batuque",
     name: "Festival de Batuque",
     category_slug: "musica-ao-vivo",
     description: "O maior festival de música tradicional de Santiago. Não perca.",
