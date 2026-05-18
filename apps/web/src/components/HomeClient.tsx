@@ -269,20 +269,20 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
               />
 
               {/*
-               * Title is 20vw; on 1440px desktop that is 288px → spans y=106–394.
-               * Stars above stop at y=85 (safe margin above y=106 on any screen).
-               * Stars below start at y=405 (safe margin below y=394 on any screen).
-               * x = interpolated contourX − 22 (right edge outside red line).
+               * Title 20vw → desktop 1440px spans y=106–394 in island coords.
+               * Above: 5 stars y=4→100, spacing 24px (top of island → just before title).
+               * Below: 5 stars y=400→478, spacing ~19.5px (just after title → island base).
+               * x = interpolated contourX − 22 (textAnchor=end, outside red line).
                */}
 
-              {/* 5 stars above title zone — y=8→85 */}
-              {([[0,8],[2,28],[-12,48],[-1,68],[0,85]] as [number,number][]).map(([x,y]) => (
+              {/* 5 stars above — uniform y=4,28,52,76,100 */}
+              {([[3,4],[2,28],[-4,52],[0,76],[14,100]] as [number,number][]).map(([x,y]) => (
                 <text key={`sa-${y}`} x={x} y={y}
                   fontSize="13" fill="#FFD700" textAnchor="end" dominantBaseline="middle">★</text>
               ))}
 
-              {/* 5 stars below title zone — y=405→478 */}
-              {([[34,405],[52,425],[71,445],[86,462],[114,478]] as [number,number][]).map(([x,y]) => (
+              {/* 5 stars below — uniform y=400,420,439,459,478 */}
+              {([[29,400],[48,420],[65,439],[84,459],[114,478]] as [number,number][]).map(([x,y]) => (
                 <text key={`sb-${y}`} x={x} y={y}
                   fontSize="13" fill="#FFD700" textAnchor="end" dominantBaseline="middle">★</text>
               ))}
