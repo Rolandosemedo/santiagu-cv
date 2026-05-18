@@ -238,13 +238,44 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
           opacity: phase === "opening" ? 0 : 1,
           transition: phase === "opening" ? "opacity 0.15s ease" : "none",
         }}>
-          {/* Island silhouette */}
+          {/* Island silhouette + Cape Verde flag elements */}
           <div style={{ position: "relative", width: 300, height: 500, flexShrink: 0 }}>
             <svg width="300" height="500" viewBox="0 0 300 500"
               fill="none" aria-hidden="true"
               style={{ position: "absolute", inset: 0 }}>
               <path d={SANTIAGO_PATH} fill="white" opacity="0.16" />
             </svg>
+
+            {/* White vertical line — flush to island left edge */}
+            <div aria-hidden="true" style={{
+              position: "absolute", top: 0, bottom: 0,
+              left: -9, width: 1.5,
+              background: "rgba(255,255,255,0.65)",
+            }} />
+            {/* Red vertical line — parallel, just left of white */}
+            <div aria-hidden="true" style={{
+              position: "absolute", top: 0, bottom: 0,
+              left: -14, width: 1.5,
+              background: "rgba(205,32,44,0.75)",
+            }} />
+
+            {/* 5 stars above the title zone (top half of island) */}
+            {[30, 82, 134, 186, 218].map((y) => (
+              <span key={`star-top-${y}`} aria-hidden="true" style={{
+                position: "absolute", top: y, left: -26,
+                fontSize: 12, lineHeight: 1, color: "#FFD700",
+                userSelect: "none", pointerEvents: "none",
+              }}>★</span>
+            ))}
+
+            {/* 5 stars below the title zone (bottom half of island) */}
+            {[282, 322, 370, 422, 470].map((y) => (
+              <span key={`star-bot-${y}`} aria-hidden="true" style={{
+                position: "absolute", top: y, left: -26,
+                fontSize: 12, lineHeight: 1, color: "#FFD700",
+                userSelect: "none", pointerEvents: "none",
+              }}>★</span>
+            ))}
           </div>
 
           {/* Large title — centred over the full viewport width */}
