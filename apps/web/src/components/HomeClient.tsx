@@ -241,16 +241,11 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
           {/* Island silhouette + Cape Verde flag elements */}
           <div style={{ position: "relative", width: 300, height: 500, flexShrink: 0 }}>
             {/*
-             * overflow="visible" lets lines/stars extend left of the SVG box
-             * Left contour points used for interpolation:
-             *   (25,4)(13,21)(28,31)(7,46)(21,54)(22,87)(34,90)(38,113)
-             *   (22,129)(25,151)(16,177)(8,183)(18,237)(11,251)(13,267)
-             *   (0,279)(3,307)(15,312)(25,347)(44,352)(54,365)(51,400)
-             *
-             * White polyline = contourX - 8
-             * Red  polyline = contourX - 14
-             * Stars textAnchor="end" at x=contourX (right edge touches contour)
-             * Title zone centre ≈ y=250 in the 500px island div
+             * Left contour (top→base): (25,4)…(51,400)→(111,465)→(140,480)
+             * White polyline = contourX - 6  (strokeWidth 6)
+             * Red   polyline = contourX - 16 (strokeWidth 6)
+             * Stars outside red line: textAnchor="end" at x = contourX - 22
+             * Title zone centre ≈ y=250; stars above y=15→235, below y=270→470
              */}
             <svg width="300" height="500" viewBox="0 0 300 500"
               fill="none" aria-hidden="true" overflow="visible"
@@ -259,30 +254,30 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
               {/* Island silhouette */}
               <path d={SANTIAGO_PATH} fill="white" opacity="0.16" />
 
-              {/* White line — left contour offset -8px */}
+              {/* White line — full left contour, offset -6px, 6px thick */}
               <polyline
-                points="17,4 5,21 20,31 -1,46 13,54 14,87 26,90 30,113 14,129 17,151 8,177 0,183 10,237 3,251 5,267 -8,279 -5,307 7,312 17,347 36,352 46,365 43,400"
-                stroke="rgba(255,255,255,0.65)" strokeWidth="1.5" fill="none"
+                points="19,4 7,21 22,31 1,46 15,54 16,87 28,90 32,113 16,129 19,151 10,177 2,183 12,237 5,251 7,267 -6,279 -3,307 9,312 19,347 38,352 48,365 45,400 105,465 134,480"
+                stroke="rgba(255,255,255,0.70)" strokeWidth="6" fill="none"
                 strokeLinejoin="round" strokeLinecap="round"
               />
 
-              {/* Red line — left contour offset -14px */}
+              {/* Red line — full left contour, offset -16px, 6px thick */}
               <polyline
-                points="11,4 -1,21 14,31 -7,46 7,54 8,87 20,90 24,113 8,129 11,151 2,177 -6,183 4,237 -3,251 -1,267 -14,279 -11,307 1,312 11,347 30,352 40,365 37,400"
-                stroke="rgba(205,32,44,0.75)" strokeWidth="1.5" fill="none"
+                points="9,4 -3,21 12,31 -9,46 5,54 6,87 18,90 22,113 6,129 9,151 0,177 -8,183 2,237 -5,251 -3,267 -16,279 -13,307 -1,312 9,347 28,352 38,365 35,400 95,465 124,480"
+                stroke="rgba(205,32,44,0.80)" strokeWidth="6" fill="none"
                 strokeLinejoin="round" strokeLinecap="round"
               />
 
-              {/* 5 stars above title zone — right edge at contour x, centred vertically */}
-              {([[17,15],[22,70],[26,125],[12,180],[18,235]] as [number,number][]).map(([x,y]) => (
+              {/* 5 stars above title zone — outside red line (x = contourX − 22) */}
+              {([[-5,15],[0,70],[4,125],[-10,180],[-4,235]] as [number,number][]).map(([x,y]) => (
                 <text key={`sa-${y}`} x={x} y={y}
-                  fontSize="11" fill="#FFD700" textAnchor="end" dominantBaseline="middle">★</text>
+                  fontSize="13" fill="#FFD700" textAnchor="end" dominantBaseline="middle">★</text>
               ))}
 
               {/* 5 stars below title zone */}
-              {([[13,265],[2,298],[20,330],[52,362],[51,395]] as [number,number][]).map(([x,y]) => (
+              {([[-12,270],[-5,320],[32,370],[47,420],[99,470]] as [number,number][]).map(([x,y]) => (
                 <text key={`sb-${y}`} x={x} y={y}
-                  fontSize="11" fill="#FFD700" textAnchor="end" dominantBaseline="middle">★</text>
+                  fontSize="13" fill="#FFD700" textAnchor="end" dominantBaseline="middle">★</text>
               ))}
             </svg>
           </div>
