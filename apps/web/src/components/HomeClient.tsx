@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight, TrendingUp } from "lucide-react";
 import { Navbar } from "@/components/ui/Navbar";
@@ -195,6 +195,23 @@ function DoorPanel({ side, open }: { side: "left" | "right"; open: boolean }) {
   );
 }
 
+/* ── Left contour interpolation ──────────────────────────── */
+const LEFT_CONTOUR: [number, number][] = [
+  [25,4],[13,21],[28,31],[7,46],[21,54],[22,87],[34,90],[38,113],
+  [22,129],[25,151],[16,177],[8,183],[18,237],[11,251],[13,267],
+  [0,279],[3,307],[15,312],[25,347],[44,352],[54,365],[51,400],
+  [111,465],[140,480],
+];
+function getContourX(y: number): number {
+  if (y <= LEFT_CONTOUR[0][1]) return LEFT_CONTOUR[0][0];
+  for (let i = 0; i < LEFT_CONTOUR.length - 1; i++) {
+    const [x0, y0] = LEFT_CONTOUR[i];
+    const [x1, y1] = LEFT_CONTOUR[i + 1];
+    if (y <= y1) return x0 + ((y - y0) / (y1 - y0)) * (x1 - x0);
+  }
+  return LEFT_CONTOUR[LEFT_CONTOUR.length - 1][0];
+}
+
 /* ═══════════════════════════════════════════════════════════
    HOME CLIENT
    ═══════════════════════════════════════════════════════════ */
@@ -203,6 +220,28 @@ type Phase = "hero" | "opening" | "done";
 export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
   const [phase, setPhase] = useState<Phase>("hero");
   const [doorsOpen, setDoorsOpen] = useState(false);
+  const [winW, setWinW] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth : 390
+  );
+  useEffect(() => {
+    const onResize = () => setWinW(window.innerWidth);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  /* Title is 20vw, centred at y=250 in the 500px island div.
+     titleTop/Bot = where the title starts/ends in island coords. */
+  const titleHalf = winW * 0.10;
+  const titleTop  = Math.max(4,   250 - titleHalf);
+  const titleBot  = Math.min(478, 250 + titleHalf);
+  const starsAbove: [number, number][] = Array.from({ length: 5 }, (_, i) => {
+    const y = 4 + (i / 4) * (titleTop - 4);
+    return [getContourX(y) - 22, y];
+  });
+  const starsBelow: [number, number][] = Array.from({ length: 5 }, (_, i) => {
+    const y = titleBot + (i / 4) * (478 - titleBot);
+    return [getContourX(y) - 22, y];
+  });
 
   function enter() {
     if (phase !== "hero") return;
@@ -268,22 +307,15 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
                 strokeLinejoin="round" strokeLinecap="round"
               />
 
-              {/*
-               * Title 20vw → desktop 1440px spans y=106–394 in island coords.
-               * Above: 5 stars y=4→100, spacing 24px (top of island → just before title).
-               * Below: 5 stars y=400→478, spacing ~19.5px (just after title → island base).
-               * x = interpolated contourX − 22 (textAnchor=end, outside red line).
-               */}
-
-              {/* 5 stars above — uniform y=4,28,52,76,100 */}
-              {([[3,4],[2,28],[-4,52],[0,76],[14,100]] as [number,number][]).map(([x,y]) => (
-                <text key={`sa-${y}`} x={x} y={y}
+              {/* 5 stars above — y=4 → titleTop, uniform spacing, computed from winW */}
+              {starsAbove.map(([x, y]) => (
+                <text key={`sa-${y.toFixed(1)}`} x={x} y={y}
                   fontSize="13" fill="#FFD700" textAnchor="end" dominantBaseline="middle">★</text>
               ))}
 
-              {/* 5 stars below — uniform y=400,420,439,459,478 */}
-              {([[29,400],[48,420],[65,439],[84,459],[114,478]] as [number,number][]).map(([x,y]) => (
-                <text key={`sb-${y}`} x={x} y={y}
+              {/* 5 stars below — y=titleBot → 478, uniform spacing */}
+              {starsBelow.map(([x, y]) => (
+                <text key={`sb-${y.toFixed(1)}`} x={x} y={y}
                   fontSize="13" fill="#FFD700" textAnchor="end" dominantBaseline="middle">★</text>
               ))}
             </svg>
