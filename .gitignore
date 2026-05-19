@@ -1,2 +1,16 @@
 .nvm
 node_modules/
+
+# Build output
+.next/
+dist/
+out/
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env*.local
+
+# Vercel
+.vercel
