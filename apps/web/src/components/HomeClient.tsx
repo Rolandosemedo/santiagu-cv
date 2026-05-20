@@ -333,6 +333,17 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
             pointerEvents: "none",
           }} />
 
+          {/* Linha horizontal — do título ao portão */}
+          <div style={{
+            position: "absolute",
+            top: 70,
+            left: "calc(50% + 19.5vw)",
+            right: 24,
+            height: "0.6px",
+            background: "rgba(255,255,255,0.75)",
+            pointerEvents: "none",
+          }} />
+
           {/* Portal button */}
           <button onClick={enter} aria-label="Entra na ilha"
             style={{
