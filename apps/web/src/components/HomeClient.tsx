@@ -322,6 +322,17 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
             Santi&apos;Águ
           </p>
 
+          {/* Linha vertical — à direita do título */}
+          <div style={{
+            position: "absolute",
+            left: "calc(50% + 19.5vw)",
+            top: 70,
+            bottom: 0,
+            width: "0.6px",
+            background: "rgba(255,255,255,0.75)",
+            pointerEvents: "none",
+          }} />
+
           {/* Portal button */}
           <button onClick={enter} aria-label="Entra na ilha"
             style={{
