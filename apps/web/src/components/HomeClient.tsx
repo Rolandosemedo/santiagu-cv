@@ -8,75 +8,39 @@ import { PlaceCard } from "@/components/places/PlaceCard";
 import { CATEGORIES } from "@/lib/types";
 import type { Place } from "@/lib/types";
 
-const SANTIAGO_PATH =
-  "M 25 4 L 13 21 L 28 31 L 7 46 L 21 54 L 22 87 L 34 90 L 38 113 " +
-  "L 22 129 L 25 151 L 16 177 L 8 183 L 18 237 L 11 251 L 13 267 " +
-  "L 0 279 L 3 307 L 15 312 L 25 347 L 44 352 L 54 365 L 51 400 " +
-  "L 111 465 L 140 480 L 206 485 L 229 499 L 240 481 L 256 484 " +
-  "L 264 444 L 275 427 L 272 415 L 281 402 L 295 403 L 299 370 " +
-  "L 286 358 L 286 340 L 268 318 L 241 266 L 240 238 L 220 233 " +
-  "L 209 207 L 193 209 L 157 162 L 137 121 L 124 121 L 121 105 " +
-  "L 84 80 L 75 59 L 85 38 L 84 24 L 63 5 L 51 19 L 40 0 Z";
+/* Vértices do polígono da ilha — fonte única de verdade. */
+const ISLAND_POINTS: [number,number][] = [
+  [25,4],[13,21],[28,31],[7,46],[21,54],[22,87],[34,90],[38,113],
+  [22,129],[25,151],[16,177],[8,183],[18,237],[11,251],[13,267],
+  [0,279],[3,307],[15,312],[25,347],[44,352],[54,365],[51,400],
+  [111,465],[140,480],[206,485],[229,499],[240,481],[256,484],
+  [264,444],[275,427],[272,415],[281,402],[295,403],[299,370],
+  [286,358],[286,340],[268,318],[241,266],[240,238],[220,233],
+  [209,207],[193,209],[157,162],[137,121],[124,121],[121,105],
+  [84,80],[75,59],[85,38],[84,24],[63,5],[51,19],[40,0],
+];
+
+/* Catmull-Rom → cubic bezier: gera um path fechado suave. */
+function smoothClosedPath(pts: [number,number][], t = 0.3): string {
+  const n = pts.length;
+  const d = [`M ${pts[0][0]} ${pts[0][1]}`];
+  for (let i = 0; i < n; i++) {
+    const p0 = pts[(i - 1 + n) % n], p1 = pts[i];
+    const p2 = pts[(i + 1) % n],     p3 = pts[(i + 2) % n];
+    d.push(
+      `C ${(p1[0]+(p2[0]-p0[0])*t).toFixed(1)} ${(p1[1]+(p2[1]-p0[1])*t).toFixed(1)}` +
+      ` ${(p2[0]-(p3[0]-p1[0])*t).toFixed(1)} ${(p2[1]-(p3[1]-p1[1])*t).toFixed(1)}` +
+      ` ${p2[0]} ${p2[1]}`
+    );
+  }
+  return d.join(" ") + " Z";
+}
+
+const SANTIAGO_PATH = smoothClosedPath(ISLAND_POINTS);
 
 const HERO_GRADIENT = "linear-gradient(180deg, #0096C7 0%, #023E8A 45%, #03045E 100%)";
 const EASE = "cubic-bezier(0.25, 0.46, 0.45, 0.94)";
 
-/* Todas as arestas do polígono da ilha (viewBox 0 0 300 500).
- * Usado pelo scanline para encontrar o X máximo (bordo direito) a cada Y. */
-const ISLAND_EDGES: [[number,number],[number,number]][] = [
-  [[25,4],[13,21]],   [[13,21],[28,31]],   [[28,31],[7,46]],    [[7,46],[21,54]],
-  [[21,54],[22,87]],  [[22,87],[34,90]],   [[34,90],[38,113]],  [[38,113],[22,129]],
-  [[22,129],[25,151]],[[25,151],[16,177]],  [[16,177],[8,183]],  [[8,183],[18,237]],
-  [[18,237],[11,251]],[[11,251],[13,267]],  [[13,267],[0,279]],  [[0,279],[3,307]],
-  [[3,307],[15,312]], [[15,312],[25,347]],  [[25,347],[44,352]], [[44,352],[54,365]],
-  [[54,365],[51,400]],[[51,400],[111,465]], [[111,465],[140,480]],[[140,480],[206,485]],
-  [[206,485],[229,499]],[[229,499],[240,481]],[[240,481],[256,484]],[[256,484],[264,444]],
-  [[264,444],[275,427]],[[275,427],[272,415]],[[272,415],[281,402]],[[281,402],[295,403]],
-  [[295,403],[299,370]],[[299,370],[286,358]],[[286,358],[286,340]],[[286,340],[268,318]],
-  [[268,318],[241,266]],[[241,266],[240,238]],[[240,238],[220,233]],[[220,233],[209,207]],
-  [[209,207],[193,209]],[[193,209],[157,162]],[[157,162],[137,121]],[[137,121],[124,121]],
-  [[124,121],[121,105]],[[121,105],[84,80]],  [[84,80],[75,59]],   [[75,59],[85,38]],
-  [[85,38],[84,24]],  [[84,24],[63,5]],    [[63,5],[51,19]],    [[51,19],[40,0]],
-  [[40,0],[25,4]],    // aresta de fecho Z
-];
-
-/* Scanline: X máximo do polígono da ilha a uma dada altura svgY. */
-function maxXAtY(svgY: number): number {
-  let maxX = -Infinity;
-  for (const [[x1,y1],[x2,y2]] of ISLAND_EDGES) {
-    const lo = Math.min(y1, y2), hi = Math.max(y1, y2);
-    if (svgY < lo || svgY > hi) continue;
-    if (lo === hi) { maxX = Math.max(maxX, x1, x2); continue; }
-    maxX = Math.max(maxX, x1 + (svgY - y1) / (y2 - y1) * (x2 - x1));
-  }
-  return maxX === -Infinity ? 0 : maxX;
-}
-
-function buildLinePath(
-  xScreen: number,
-  islandLeft: number,
-  islandTop: number,
-  heroH: number,
-  cutPx: number,
-): string {
-  const xSvg = xScreen - islandLeft;
-  const islandBot = islandTop + 500;
-  const yStart = cutPx;
-  const yEnd = heroH - cutPx;
-  const cmds: string[] = [];
-  for (let y = yStart; y <= yEnd; y += 2) {
-    let x: number;
-    if (y < islandTop || y > islandBot) {
-      x = xScreen;
-    } else {
-      const rcx = maxXAtY(y - islandTop);
-      x = rcx > xSvg ? islandLeft + rcx : xScreen;
-    }
-    cmds.push(`${cmds.length === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`);
-  }
-  cmds.push(`L ${xScreen.toFixed(1)} ${(heroH - cutPx).toFixed(1)}`);
-  return cmds.join(" ");
-}
 
 /* ═══════════════════════════════════════════════════════════
    DOOR PANEL — minimalist white-on-dark-blue silhouette
@@ -252,27 +216,6 @@ function DoorPanel({ side, open }: { side: "left" | "right"; open: boolean }) {
   );
 }
 
-/* ── Flag star positions — static, contourX(y) − 20px ───────
- * y values = fixed % of 500px viewBox. x = left contour x − 20.
- * Above: 5%, 16%, 27%, 38%, 49%  →  y = 25, 80, 135, 190, 245
- * Below: 61%, 72%, 83%, 94%, ~100% →  y = 305, 360, 415, 470, 478
- * contourX interpolated from path left edge at each y.
- * ─────────────────────────────────────────────────────────── */
-const STARS_ABOVE: [number, number][] = [
-  // [x, y]  contourX(y) − 20
-  [-1,  25],   // y=25:  contourX≈19
-  [ 2,  80],   // y=80:  contourX≈22
-  [ 3, 135],   // y=135: contourX≈23
-  [-11, 190],  // y=190: contourX≈9
-  [-6,  245],  // y=245: contourX≈14
-];
-const STARS_BELOW: [number, number][] = [
-  [-13, 305],  // y=305: contourX≈7  (clamped from −17 for narrow screens)
-  [ 30, 360],  // y=360: contourX≈50
-  [ 45, 415],  // y=415: contourX≈65
-  [ 82, 455],  // y=455 = (415+495)/2: contourX≈102
-  [120, 495],  // y=495 (99%): contourX capped at 140 (last contour point)
-];
 
 /* ═══════════════════════════════════════════════════════════
    HOME CLIENT
@@ -282,32 +225,18 @@ type Phase = "hero" | "opening" | "done";
 export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
   const [phase, setPhase] = useState<Phase>("hero");
   const [doorsOpen, setDoorsOpen] = useState(false);
-  const starsAbove = STARS_ABOVE;
-  const starsBelow = STARS_BELOW;
-  const [iLineLeft, setILineLeft] = useState<number | null>(null);
   const [tiLeft, setTiLeft] = useState<number | null>(null);
-  const [whitePath, setWhitePath] = useState("");
-  const [redPath, setRedPath] = useState("");
 
   useEffect(() => {
     function measure() {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
-      const fontSize = window.innerWidth * 0.20;
-      ctx.font = `300 ${fontSize}px Georgia, ‘Times New Roman’, serif`;
+      const fs = window.innerWidth * 0.20;
+      ctx.font = `300 ${fs}px Georgia, ‘Times New Roman’, serif`;
       const fullWidth = ctx.measureText("Santi’Águ").width;
-      const santiWidth = ctx.measureText("Santi").width;
       const startX = window.innerWidth / 2 - fullWidth / 2;
-      const iLeft = startX + santiWidth;
-      setILineLeft(iLeft);
       setTiLeft(startX + ctx.measureText("Sant").width);
-      const islandLeft = window.innerWidth / 2 - 150;
-      const islandTop = window.innerHeight / 2 - 250;
-      const heroH = window.innerHeight;
-      const cutPx = 2 * 96 / 2.54; // 2cm em px (96 dpi)
-      setWhitePath(buildLinePath(iLeft + 15, islandLeft, islandTop, heroH, cutPx));
-      setRedPath(buildLinePath(iLeft + 17, islandLeft, islandTop, heroH, cutPx));
     }
     measure();
     window.addEventListener("resize", measure);
@@ -343,56 +272,65 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
       {showHero && (
         <div style={{
           position: "fixed", inset: 0, zIndex: 40,
-          display: "flex", alignItems: "center", justifyContent: "center",
           background: HERO_GRADIENT,
           opacity: phase === "opening" ? 0 : 1,
           transition: phase === "opening" ? "opacity 0.15s ease" : "none",
         }}>
-          {/* Island silhouette + Cape Verde flag elements */}
-          <div style={{ position: "relative", width: 300, height: 500, flexShrink: 0 }}>
-            {/*
-             * Left contour (top→base): (25,4)…(51,400)→(111,465)→(140,480)
-             * White polyline = contourX - 6  (strokeWidth 6)
-             * Red   polyline = contourX - 16 (strokeWidth 6)
-             * Stars outside red line: textAnchor="end" at x = contourX - 22
-             * Title zone centre ≈ y=250; stars above y=15→235, below y=270→470
-             */}
-            <svg width="300" height="500" viewBox="0 0 300 500"
-              fill="none" aria-hidden="true" overflow="visible"
-              style={{ position: "absolute", inset: 0 }}>
-
-              {/* Island silhouette */}
+          {/* Silhueta — centrada via CSS, renderiza imediatamente */}
+          <div style={{
+            position: "absolute",
+            left: "calc(50% - 150px)", top: "calc(50% - 250px)",
+            width: 300, height: 500, pointerEvents: "none",
+          }}>
+            <svg width="300" height="500" viewBox="0 0 300 500" aria-hidden="true">
               <path d={SANTIAGO_PATH} fill="white" opacity="0.16" />
-
-              {/* White line — full left contour, offset -6px, 6px thick */}
-              <polyline
-                points="19,4 7,21 22,31 1,46 15,54 16,87 28,90 32,113 16,129 19,151 10,177 2,183 12,237 5,251 7,267 -6,279 -3,307 9,312 19,347 38,352 48,365 45,400 105,465 134,480"
-                stroke="rgba(255,255,255,0.70)" strokeWidth="6" fill="none"
-                strokeLinejoin="round" strokeLinecap="round"
-              />
-
-              {/* Red line — full left contour, offset -16px, 6px thick */}
-              <polyline
-                points="9,4 -3,21 12,31 -9,46 5,54 6,87 18,90 22,113 6,129 9,151 0,177 -8,183 2,237 -5,251 -3,267 -16,279 -13,307 -1,312 9,347 28,352 38,365 35,400 95,465 124,480"
-                stroke="rgba(205,32,44,0.80)" strokeWidth="6" fill="none"
-                strokeLinejoin="round" strokeLinecap="round"
-              />
-
-              {/* 5 stars above title (5%–49% of island height) */}
-              {starsAbove.map(([x, y]) => (
-                <text key={`sa-${y}`} x={x} y={y}
-                  fontSize="13" fill="#FFD700" textAnchor="end" dominantBaseline="middle">★</text>
-              ))}
-
-              {/* 5 stars below title (61%–100% of island height) */}
-              {starsBelow.map(([x, y]) => (
-                <text key={`sb-${y}`} x={x} y={y}
-                  fontSize="13" fill="#FFD700" textAnchor="end" dominantBaseline="middle">★</text>
-              ))}
             </svg>
           </div>
 
-          {/* Large title — centred over the full viewport width */}
+          {/* Linha vermelha fina mascarada pelo título — coordenadas CSS puras */}
+          <svg aria-hidden="true" style={{
+            position: "absolute", inset: 0,
+            width: "100%", height: "100%",
+            pointerEvents: "none",
+          }}>
+            <defs>
+              {/*
+               * Mask em coordenadas root SVG (= píxeis de viewport).
+               * O texto usa vw/vh para ficar alinhado com o título CSS
+               * sem depender de medição JS.
+               */}
+              <mask id="title-mask">
+                <rect width="100%" height="100%" fill="white" />
+                <text
+                  x="0" y="0"
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  style={{
+                    fontFamily: "Georgia, 'Times New Roman', serif",
+                    fontWeight: 300,
+                    fontSize: "20vw",
+                    transform: "translate(50vw, 50vh)",
+                  }}
+                  fill="black"
+                >
+                  Santi&apos;Águ
+                </text>
+              </mask>
+            </defs>
+            {/* Mask no <g> externo (sem transform) → coordenadas de viewport */}
+            <g mask="url(#title-mask)">
+              <g style={{ transform: "translate(calc(50vw - 150px), calc(50vh - 250px))" }}>
+                <path
+                  d={SANTIAGO_PATH}
+                  fill="none"
+                  stroke="#CF2029"
+                  strokeWidth="1.5"
+                />
+              </g>
+            </g>
+          </svg>
+
+          {/* Título — centrado sobre todo o viewport */}
           <p style={{
             position: "absolute",
             top: "50%", left: 0, right: 0,
@@ -407,61 +345,6 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
           }}>
             Santi&apos;Águ
           </p>
-
-          {/* Bracket decorativo "]" — 2 linhas verticais + extensões horizontais */}
-          {iLineLeft !== null && (<>
-            {/* Verticais — contornam o bordo esquerdo da ilha */}
-            {(whitePath || redPath) && (
-              <svg aria-hidden="true" style={{
-                position: "absolute", inset: 0,
-                width: "100%", height: "100%",
-                overflow: "visible", pointerEvents: "none",
-              }}>
-                {whitePath && <path d={whitePath} stroke="rgba(255,255,255,0.85)" strokeWidth="2.5" fill="none" />}
-                {redPath   && <path d={redPath}   stroke="#CF2029"                 strokeWidth="2.5" fill="none" />}
-              </svg>
-            )}
-
-            {/* Horizontais no TOPO — do início das verticais até ao botão "Entra" */}
-            <div style={{
-              position: "absolute",
-              top: "2cm",
-              left: iLineLeft + 15,
-              right: 24,
-              height: "1.5px",
-              background: "rgba(255,255,255,0.85)",
-              pointerEvents: "none",
-            }} />
-            <div style={{
-              position: "absolute",
-              top: "calc(2cm + 2px)",
-              left: iLineLeft + 15,
-              right: 24,
-              height: "1.5px",
-              background: "#CF2029",
-              pointerEvents: "none",
-            }} />
-
-            {/* Horizontais na BASE — do fim das verticais até ao botão "Entra" */}
-            <div style={{
-              position: "absolute",
-              bottom: "2cm",
-              left: iLineLeft + 15,
-              right: 24,
-              height: "1.5px",
-              background: "rgba(255,255,255,0.85)",
-              pointerEvents: "none",
-            }} />
-            <div style={{
-              position: "absolute",
-              bottom: "calc(2cm + 2px)",
-              left: iLineLeft + 15,
-              right: 24,
-              height: "1.5px",
-              background: "#CF2029",
-              pointerEvents: "none",
-            }} />
-          </>)}
 
           {/* Portal button — integrado no título entre o "t" e o "i" */}
           {tiLeft !== null && (
