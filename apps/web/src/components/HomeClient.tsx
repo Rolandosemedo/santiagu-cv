@@ -21,27 +21,35 @@ const SANTIAGO_PATH =
 const HERO_GRADIENT = "linear-gradient(180deg, #0096C7 0%, #023E8A 45%, #03045E 100%)";
 const EASE = "cubic-bezier(0.25, 0.46, 0.45, 0.94)";
 
-/* Bordo direito da ilha (viewBox 0 0 300 500), ordenado por y crescente.
- * Extraído dos vértices da jornada de retorno do path SVG (top→bottom). */
-const RIGHT_CONTOUR: [number, number][] = [
-  [40,  0],  [63,  5],  [51, 19],  [84, 24],  [85, 38],
-  [75, 59],  [84, 80],  [121,105], [137,121], [157,162],
-  [209,207], [193,209], [220,233], [240,238], [241,266],
-  [268,318], [286,340], [286,358], [299,370], [281,402],
-  [295,403], [272,415], [275,427], [264,444], [240,481],
-  [256,484], [229,499],
+/* Todas as arestas do polígono da ilha (viewBox 0 0 300 500).
+ * Usado pelo scanline para encontrar o X máximo (bordo direito) a cada Y. */
+const ISLAND_EDGES: [[number,number],[number,number]][] = [
+  [[25,4],[13,21]],   [[13,21],[28,31]],   [[28,31],[7,46]],    [[7,46],[21,54]],
+  [[21,54],[22,87]],  [[22,87],[34,90]],   [[34,90],[38,113]],  [[38,113],[22,129]],
+  [[22,129],[25,151]],[[25,151],[16,177]],  [[16,177],[8,183]],  [[8,183],[18,237]],
+  [[18,237],[11,251]],[[11,251],[13,267]],  [[13,267],[0,279]],  [[0,279],[3,307]],
+  [[3,307],[15,312]], [[15,312],[25,347]],  [[25,347],[44,352]], [[44,352],[54,365]],
+  [[54,365],[51,400]],[[51,400],[111,465]], [[111,465],[140,480]],[[140,480],[206,485]],
+  [[206,485],[229,499]],[[229,499],[240,481]],[[240,481],[256,484]],[[256,484],[264,444]],
+  [[264,444],[275,427]],[[275,427],[272,415]],[[272,415],[281,402]],[[281,402],[295,403]],
+  [[295,403],[299,370]],[[299,370],[286,358]],[[286,358],[286,340]],[[286,340],[268,318]],
+  [[268,318],[241,266]],[[241,266],[240,238]],[[240,238],[220,233]],[[220,233],[209,207]],
+  [[209,207],[193,209]],[[193,209],[157,162]],[[157,162],[137,121]],[[137,121],[124,121]],
+  [[124,121],[121,105]],[[121,105],[84,80]],  [[84,80],[75,59]],   [[75,59],[85,38]],
+  [[85,38],[84,24]],  [[84,24],[63,5]],    [[63,5],[51,19]],    [[51,19],[40,0]],
+  [[40,0],[25,4]],    // aresta de fecho Z
 ];
 
-function rightContourXAtY(svgY: number): number {
-  const pts = RIGHT_CONTOUR;
-  if (svgY <= pts[0][1]) return pts[0][0];
-  if (svgY >= pts[pts.length - 1][1]) return pts[pts.length - 1][0];
-  for (let i = 0; i < pts.length - 1; i++) {
-    const [x1, y1] = pts[i], [x2, y2] = pts[i + 1];
-    if (svgY >= y1 && svgY <= y2)
-      return x1 + (x2 - x1) * (svgY - y1) / (y2 - y1);
+/* Scanline: X máximo do polígono da ilha a uma dada altura svgY. */
+function maxXAtY(svgY: number): number {
+  let maxX = -Infinity;
+  for (const [[x1,y1],[x2,y2]] of ISLAND_EDGES) {
+    const lo = Math.min(y1, y2), hi = Math.max(y1, y2);
+    if (svgY < lo || svgY > hi) continue;
+    if (lo === hi) { maxX = Math.max(maxX, x1, x2); continue; }
+    maxX = Math.max(maxX, x1 + (svgY - y1) / (y2 - y1) * (x2 - x1));
   }
-  return pts[0][0];
+  return maxX === -Infinity ? 0 : maxX;
 }
 
 function buildLinePath(
@@ -61,7 +69,7 @@ function buildLinePath(
     if (y < islandTop || y > islandBot) {
       x = xScreen;
     } else {
-      const rcx = rightContourXAtY(y - islandTop);
+      const rcx = maxXAtY(y - islandTop);
       x = rcx > xSvg ? islandLeft + rcx : xScreen;
     }
     cmds.push(`${cmds.length === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`);
