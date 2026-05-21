@@ -22,7 +22,7 @@ export function CategoryFilter({ selected, onChange }: CategoryFilterProps) {
             : "bg-white text-ocean-dark/70 border-ocean/20 hover:border-ocean/40"
         )}
       >
-        🌍 Tudo
+        Tudo
       </button>
 
       {CATEGORIES.map((cat) => {

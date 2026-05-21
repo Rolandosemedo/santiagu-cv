@@ -48,7 +48,6 @@ export function ExplorarClient({ initialPlaces }: { initialPlaces: Place[] }) {
         const q = query.toLowerCase();
         return (
           p.name.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q) ||
           p.tags?.some((t) => t.toLowerCase().includes(q))
         );
       }
