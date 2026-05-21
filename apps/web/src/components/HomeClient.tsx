@@ -459,7 +459,7 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
           <button onClick={enter} aria-label="Entra na ilha"
             style={{
               position: "absolute",
-              top: "50%",
+              top: "calc(50% + 1cm)",
               left: tiLeft,
               transform: "translate(-50%, -50%)",
               display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
@@ -467,7 +467,7 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
               animation: "fadeIn 1s 2.5s ease both", opacity: 0,
               zIndex: 1,
             }}>
-            <svg width="22" height="28" viewBox="0 0 36 46" fill="none" aria-hidden="true">
+            <svg width="28" height="36" viewBox="0 0 36 46" fill="none" aria-hidden="true">
               <rect x="1"  y="22" width="7" height="23" rx="1.5" fill="rgba(255,255,255,0.22)" />
               <rect x="28" y="22" width="7" height="23" rx="1.5" fill="rgba(255,255,255,0.22)" />
               <path d="M 1 22 A 17 17 0 0 1 35 22"
@@ -477,7 +477,7 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
               <polygon points="14,8 18,1 22,8" fill="rgba(255,255,255,0.65)" />
             </svg>
             <span style={{
-              color: "rgba(255,255,255,0.60)", fontSize: 7,
+              color: "rgba(255,255,255,0.60)", fontSize: 8,
               letterSpacing: "0.20em", fontFamily: "Georgia, serif",
             }}>
               ENTRA
