@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Syne, DM_Sans } from "next/font/google";
 import "./globals.css";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { Footer } from "@/components/ui/Footer";
 
 const syne = Syne({
   subsets: ["latin"],
@@ -54,6 +55,7 @@ export default function RootLayout({
     <html lang="pt" className={`${syne.variable} ${dmSans.variable}`}>
       <body className="font-body bg-white text-ocean-dark antialiased">
         {children}
+        <Footer />
       </body>
     </html>
   );
