@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Search, Map, LayoutGrid, SlidersHorizontal, X } from "lucide-react";
 import { MapView } from "@/components/map/MapView";
@@ -8,6 +8,7 @@ import { Navbar } from "@/components/ui/Navbar";
 import { PlaceCard } from "@/components/places/PlaceCard";
 import { CategoryFilter } from "@/components/places/CategoryFilter";
 import { RatingSlider } from "@/components/places/RatingSlider";
+import { fetchPlaces } from "@/lib/api";
 import type { CategorySlug, Place } from "@/lib/types";
 
 type ViewMode = "grid" | "map";
@@ -23,6 +24,15 @@ export function ExplorarClient({ initialPlaces }: { initialPlaces: Place[] }) {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [minRating, setMinRating] = useState(0);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [places, setPlaces] = useState<Place[]>(initialPlaces);
+
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      const { data } = await fetchPlaces({ q: query || undefined, limit: 50 });
+      setPlaces(data);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [query]);
 
   function handleCategoryChange(slug: CategorySlug | null) {
     setCategory(slug);
@@ -40,7 +50,7 @@ export function ExplorarClient({ initialPlaces }: { initialPlaces: Place[] }) {
   }
 
   const filtered = useMemo(() => {
-    return initialPlaces.filter((p) => {
+    return places.filter((p) => {
       if (category && p.category_slug !== category) return false;
       if (minRating && p.rating < minRating) return false;
       if (activeTag && !p.tags?.some((t) => t === activeTag)) return false;
@@ -48,12 +58,13 @@ export function ExplorarClient({ initialPlaces }: { initialPlaces: Place[] }) {
         const q = query.toLowerCase();
         return (
           p.name.toLowerCase().includes(q) ||
-          p.tags?.some((t) => t.toLowerCase().includes(q))
+          p.tags?.some((t) => t.toLowerCase().includes(q)) ||
+          p.description.toLowerCase().includes(q)
         );
       }
       return true;
     });
-  }, [query, category, minRating, activeTag, initialPlaces]);
+  }, [places, category, minRating, activeTag, query]);
 
   return (
     <div className="min-h-screen bg-white">
