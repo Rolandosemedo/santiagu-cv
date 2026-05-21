@@ -467,7 +467,7 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
               animation: "fadeIn 1s 2.5s ease both", opacity: 0,
               zIndex: 1,
             }}>
-            <svg width="36" height="46" viewBox="0 0 36 46" fill="none" aria-hidden="true">
+            <svg width="22" height="28" viewBox="0 0 36 46" fill="none" aria-hidden="true">
               <rect x="1"  y="22" width="7" height="23" rx="1.5" fill="rgba(255,255,255,0.22)" />
               <rect x="28" y="22" width="7" height="23" rx="1.5" fill="rgba(255,255,255,0.22)" />
               <path d="M 1 22 A 17 17 0 0 1 35 22"
@@ -477,8 +477,8 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
               <polygon points="14,8 18,1 22,8" fill="rgba(255,255,255,0.65)" />
             </svg>
             <span style={{
-              color: "rgba(255,255,255,0.60)", fontSize: 10,
-              letterSpacing: "0.22em", fontFamily: "Georgia, serif",
+              color: "rgba(255,255,255,0.60)", fontSize: 7,
+              letterSpacing: "0.20em", fontFamily: "Georgia, serif",
             }}>
               ENTRA
             </span>
