@@ -21,18 +21,19 @@ const SANTIAGO_PATH =
 const HERO_GRADIENT = "linear-gradient(180deg, #0096C7 0%, #023E8A 45%, #03045E 100%)";
 const EASE = "cubic-bezier(0.25, 0.46, 0.45, 0.94)";
 
-/* Contorno esquerdo do path da ilha (viewBox 0 0 300 500).
- * Vertices do bordo esquerdo top→bottom, incluindo o canto inferior-esquerdo. */
-const LEFT_CONTOUR: [number, number][] = [
-  [25, 4],   [13, 21],  [28, 31],  [7, 46],   [21, 54],
-  [22, 87],  [34, 90],  [38, 113], [22, 129], [25, 151],
-  [16, 177], [8, 183],  [18, 237], [11, 251], [13, 267],
-  [0, 279],  [3, 307],  [15, 312], [25, 347], [44, 352],
-  [54, 365], [51, 400], [111, 465],
+/* Bordo direito da ilha (viewBox 0 0 300 500), ordenado por y crescente.
+ * Extraído dos vértices da jornada de retorno do path SVG (top→bottom). */
+const RIGHT_CONTOUR: [number, number][] = [
+  [40,  0],  [63,  5],  [51, 19],  [84, 24],  [85, 38],
+  [75, 59],  [84, 80],  [121,105], [137,121], [157,162],
+  [209,207], [193,209], [220,233], [240,238], [241,266],
+  [268,318], [286,340], [286,358], [299,370], [281,402],
+  [295,403], [272,415], [275,427], [264,444], [240,481],
+  [256,484], [229,499],
 ];
 
-function contourXAtY(svgY: number): number {
-  const pts = LEFT_CONTOUR;
+function rightContourXAtY(svgY: number): number {
+  const pts = RIGHT_CONTOUR;
   if (svgY <= pts[0][1]) return pts[0][0];
   if (svgY >= pts[pts.length - 1][1]) return pts[pts.length - 1][0];
   for (let i = 0; i < pts.length - 1; i++) {
@@ -60,8 +61,8 @@ function buildLinePath(
     if (y < islandTop || y > islandBot) {
       x = xScreen;
     } else {
-      const cx = contourXAtY(y - islandTop);
-      x = cx < xSvg ? islandLeft + cx : xScreen;
+      const rcx = rightContourXAtY(y - islandTop);
+      x = rcx > xSvg ? islandLeft + rcx : xScreen;
     }
     cmds.push(`${cmds.length === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`);
   }
