@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight, TrendingUp } from "lucide-react";
 import { Navbar } from "@/components/ui/Navbar";
@@ -20,6 +20,54 @@ const SANTIAGO_PATH =
 
 const HERO_GRADIENT = "linear-gradient(180deg, #0096C7 0%, #023E8A 45%, #03045E 100%)";
 const EASE = "cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+
+/* Contorno esquerdo do path da ilha (viewBox 0 0 300 500).
+ * Vertices do bordo esquerdo top→bottom, incluindo o canto inferior-esquerdo. */
+const LEFT_CONTOUR: [number, number][] = [
+  [25, 4],   [13, 21],  [28, 31],  [7, 46],   [21, 54],
+  [22, 87],  [34, 90],  [38, 113], [22, 129], [25, 151],
+  [16, 177], [8, 183],  [18, 237], [11, 251], [13, 267],
+  [0, 279],  [3, 307],  [15, 312], [25, 347], [44, 352],
+  [54, 365], [51, 400], [111, 465],
+];
+
+function contourXAtY(svgY: number): number {
+  const pts = LEFT_CONTOUR;
+  if (svgY <= pts[0][1]) return pts[0][0];
+  if (svgY >= pts[pts.length - 1][1]) return pts[pts.length - 1][0];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const [x1, y1] = pts[i], [x2, y2] = pts[i + 1];
+    if (svgY >= y1 && svgY <= y2)
+      return x1 + (x2 - x1) * (svgY - y1) / (y2 - y1);
+  }
+  return pts[0][0];
+}
+
+function buildLinePath(
+  xScreen: number,
+  islandLeft: number,
+  islandTop: number,
+  heroH: number,
+  cutPx: number,
+): string {
+  const xSvg = xScreen - islandLeft;
+  const islandBot = islandTop + 500;
+  const yStart = cutPx;
+  const yEnd = heroH - cutPx;
+  const cmds: string[] = [];
+  for (let y = yStart; y <= yEnd; y += 2) {
+    let x: number;
+    if (y < islandTop || y > islandBot) {
+      x = xScreen;
+    } else {
+      const cx = contourXAtY(y - islandTop);
+      x = cx < xSvg ? islandLeft + cx : xScreen;
+    }
+    cmds.push(`${cmds.length === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`);
+  }
+  cmds.push(`L ${xScreen.toFixed(1)} ${(heroH - cutPx).toFixed(1)}`);
+  return cmds.join(" ");
+}
 
 /* ═══════════════════════════════════════════════════════════
    DOOR PANEL — minimalist white-on-dark-blue silhouette
@@ -227,6 +275,35 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
   const [doorsOpen, setDoorsOpen] = useState(false);
   const starsAbove = STARS_ABOVE;
   const starsBelow = STARS_BELOW;
+  const [iLineLeft, setILineLeft] = useState<number | null>(null);
+  const [tiLeft, setTiLeft] = useState<number | null>(null);
+  const [whitePath, setWhitePath] = useState("");
+  const [redPath, setRedPath] = useState("");
+
+  useEffect(() => {
+    function measure() {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      const fontSize = window.innerWidth * 0.20;
+      ctx.font = `300 ${fontSize}px Georgia, ‘Times New Roman’, serif`;
+      const fullWidth = ctx.measureText("Santi’Águ").width;
+      const santiWidth = ctx.measureText("Santi").width;
+      const startX = window.innerWidth / 2 - fullWidth / 2;
+      const iLeft = startX + santiWidth;
+      setILineLeft(iLeft);
+      setTiLeft(startX + ctx.measureText("Sant").width);
+      const islandLeft = window.innerWidth / 2 - 150;
+      const islandTop = window.innerHeight / 2 - 250;
+      const heroH = window.innerHeight;
+      const cutPx = 2 * 96 / 2.54; // 2cm em px (96 dpi)
+      setWhitePath(buildLinePath(iLeft + 15, islandLeft, islandTop, heroH, cutPx));
+      setRedPath(buildLinePath(iLeft + 17, islandLeft, islandTop, heroH, cutPx));
+    }
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
 
   function enter() {
     if (phase !== "hero") return;
@@ -322,35 +399,73 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
             Santi&apos;Águ
           </p>
 
-          {/* Linha vertical — à direita do título */}
-          <div style={{
-            position: "absolute",
-            left: "calc(50% + 19.5vw)",
-            top: 70,
-            bottom: 0,
-            width: "0.6px",
-            background: "rgba(255,255,255,0.75)",
-            pointerEvents: "none",
-          }} />
+          {/* Bracket decorativo "]" — 2 linhas verticais + extensões horizontais */}
+          {iLineLeft !== null && (<>
+            {/* Verticais — contornam o bordo esquerdo da ilha */}
+            {(whitePath || redPath) && (
+              <svg aria-hidden="true" style={{
+                position: "absolute", inset: 0,
+                width: "100%", height: "100%",
+                overflow: "visible", pointerEvents: "none",
+              }}>
+                {whitePath && <path d={whitePath} stroke="rgba(255,255,255,0.85)" strokeWidth="1.5" fill="none" />}
+                {redPath   && <path d={redPath}   stroke="#CF2029"                 strokeWidth="1.5" fill="none" />}
+              </svg>
+            )}
 
-          {/* Linha horizontal — do título ao portão */}
-          <div style={{
-            position: "absolute",
-            top: 70,
-            left: "calc(50% + 19.5vw)",
-            right: 24,
-            height: "0.6px",
-            background: "rgba(255,255,255,0.75)",
-            pointerEvents: "none",
-          }} />
+            {/* Horizontais no TOPO — do início das verticais até ao botão "Entra" */}
+            <div style={{
+              position: "absolute",
+              top: "2cm",
+              left: iLineLeft + 15,
+              right: 24,
+              height: "1.5px",
+              background: "rgba(255,255,255,0.85)",
+              pointerEvents: "none",
+            }} />
+            <div style={{
+              position: "absolute",
+              top: "calc(2cm + 2px)",
+              left: iLineLeft + 15,
+              right: 24,
+              height: "1.5px",
+              background: "#CF2029",
+              pointerEvents: "none",
+            }} />
 
-          {/* Portal button */}
+            {/* Horizontais na BASE — do fim das verticais até ao botão "Entra" */}
+            <div style={{
+              position: "absolute",
+              bottom: "2cm",
+              left: iLineLeft + 15,
+              right: 24,
+              height: "1.5px",
+              background: "rgba(255,255,255,0.85)",
+              pointerEvents: "none",
+            }} />
+            <div style={{
+              position: "absolute",
+              bottom: "calc(2cm + 2px)",
+              left: iLineLeft + 15,
+              right: 24,
+              height: "1.5px",
+              background: "#CF2029",
+              pointerEvents: "none",
+            }} />
+          </>)}
+
+          {/* Portal button — integrado no título entre o "t" e o "i" */}
+          {tiLeft !== null && (
           <button onClick={enter} aria-label="Entra na ilha"
             style={{
-              position: "absolute", top: 24, right: 24,
+              position: "absolute",
+              top: "50%",
+              left: tiLeft,
+              transform: "translate(-50%, -50%)",
               display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
               background: "none", border: "none", cursor: "pointer", padding: 8,
               animation: "fadeIn 1s 2.5s ease both", opacity: 0,
+              zIndex: 1,
             }}>
             <svg width="36" height="46" viewBox="0 0 36 46" fill="none" aria-hidden="true">
               <rect x="1"  y="22" width="7" height="23" rx="1.5" fill="rgba(255,255,255,0.22)" />
@@ -368,6 +483,7 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
               ENTRA
             </span>
           </button>
+          )}
         </div>
       )}
 
