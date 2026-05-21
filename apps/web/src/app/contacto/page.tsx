@@ -178,35 +178,6 @@ export default function ContactoPage() {
         </aside>
       </div>
 
-      {/* ── Footer ──────────────────────────────────────────── */}
-      <footer className="border-t border-ocean/8 py-10 px-4 sm:px-6">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-xl">🌊</span>
-            <span className="font-display font-bold text-ocean-dark">
-              Santi&apos;Águ<span className="text-ocean">.cv</span>
-            </span>
-          </div>
-          <p className="font-body text-sm text-muted text-center">
-            Feito com ❤️ para a Ilha de Santiago · Cabo Verde 🇨🇻
-          </p>
-          <div className="flex gap-4">
-            {[
-              { label: "Sobre", href: "/sobre" },
-              { label: "Contacto", href: "/contacto" },
-              { label: "Privacidade", href: "/privacidade" },
-            ].map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
-                className="text-sm font-body text-muted hover:text-ocean transition-colors"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
