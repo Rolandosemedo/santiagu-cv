@@ -86,7 +86,6 @@ export function PlaceCard({ place, variant = "grid", className }: PlaceCardProps
               {place.verified && <BadgeCheck className="w-4 h-4 text-verde" />}
             </div>
             <h3 className="font-display font-bold text-base text-ocean-dark truncate mb-1">{place.name}</h3>
-            <p className="text-sm text-muted font-body line-clamp-2 mb-2">{place.description}</p>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1">
                 <Star className="w-3.5 h-3.5 fill-sand text-sand" />
@@ -144,7 +143,6 @@ export function PlaceCard({ place, variant = "grid", className }: PlaceCardProps
           <h3 className="font-display font-bold text-ocean-dark text-base mb-1 truncate group-hover:text-ocean transition-colors">
             {place.name}
           </h3>
-          <p className="text-sm text-muted font-body line-clamp-2 mb-3">{place.description}</p>
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1 text-muted">
