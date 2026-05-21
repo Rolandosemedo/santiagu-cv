@@ -40,7 +40,11 @@ export async function placesRoutes(fastify: FastifyInstance) {
 
     if (category) query = query.eq("category_slug", category);
     if (rating)   query = query.gte("rating", parseFloat(rating));
-    if (q)        query = query.ilike("name", `%${q}%`);
+    if (q) {
+      const words = q.trim().split(/\s+/).filter(Boolean);
+      const orFilter = words.map((w) => `name.ilike.%${w}%`).join(",");
+      query = query.or(orFilter);
+    }
 
     query = query
       .order("rating", { ascending: false })

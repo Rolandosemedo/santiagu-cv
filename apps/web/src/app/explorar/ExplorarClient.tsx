@@ -58,7 +58,8 @@ export function ExplorarClient({ initialPlaces }: { initialPlaces: Place[] }) {
       if (minRating && p.rating < minRating) return false;
       if (activeTag && !p.tags?.some((t) => t === activeTag)) return false;
       if (query) {
-        return p.name.toLowerCase().includes(query.toLowerCase());
+        const words = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
+        return words.some((w) => p.name.toLowerCase().includes(w));
       }
       return true;
     });

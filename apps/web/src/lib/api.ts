@@ -114,8 +114,10 @@ export async function fetchPlaces(
     }
 
     if (filters.q) {
-      const q = filters.q.toLowerCase();
-      data = data.filter((p) => p.name.toLowerCase().includes(q));
+      const words = filters.q.toLowerCase().trim().split(/\s+/).filter(Boolean);
+      data = data.filter((p) =>
+        words.some((w) => p.name.toLowerCase().includes(w))
+      );
     }
 
     if (filters.rating) {
