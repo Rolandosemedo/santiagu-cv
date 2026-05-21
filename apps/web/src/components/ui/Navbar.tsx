@@ -1,11 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Search, Menu, X, MapPin } from "lucide-react";
 import Link from "next/link";
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
+
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault();
+    const q = searchQuery.trim();
+    router.push(q ? `/explorar?q=${encodeURIComponent(q)}` : "/explorar");
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-ocean/8">
@@ -19,16 +28,18 @@ export function Navbar() {
         </Link>
 
         {/* Desktop search */}
-        <div className="hidden sm:flex flex-1 max-w-md relative">
+        <form onSubmit={handleSearch} className="hidden sm:flex flex-1 max-w-md relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
           <input
             type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Pesquisar restaurantes, praias, eventos…"
             className="w-full pl-9 pr-4 py-2 rounded-full border border-ocean/15 text-sm
                        bg-ocean-dark/3 focus:outline-none focus:border-ocean/40 focus:bg-white
                        transition-all placeholder:text-muted font-body"
           />
-        </div>
+        </form>
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1">
@@ -71,15 +82,17 @@ export function Navbar() {
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden border-t border-ocean/8 bg-white px-4 py-4 space-y-3">
-          <div className="relative">
+          <form onSubmit={handleSearch} className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
             <input
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Pesquisar…"
               className="w-full pl-9 pr-4 py-2.5 rounded-full border border-ocean/15 text-sm
                          bg-ocean-dark/3 focus:outline-none focus:border-ocean/40 font-body"
             />
-          </div>
+          </form>
           <nav className="flex flex-col gap-1">
             {["Explorar", "Mapa", "Eventos"].map((item) => (
               <Link
