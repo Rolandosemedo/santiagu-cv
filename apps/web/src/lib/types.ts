@@ -1,13 +1,13 @@
 // ─── Category config ─────────────────────────────────────
 export const CATEGORIES = [
-  { slug: "restaurantes",  label: "Restaurantes",  emoji: "🍽️", color: "#C4622D" },
-  { slug: "bares",         label: "Bares",          emoji: "🍹", color: "#1A8FBF" },
-  { slug: "musica-ao-vivo",label: "Música ao Vivo", emoji: "🎶", color: "#7C3AED" },
-  { slug: "praias",        label: "Praias",         emoji: "🏖️", color: "#0B5E8A" },
-  { slug: "historico",     label: "Histórico",      emoji: "🏛️", color: "#92400E" },
-  { slug: "hoteis",        label: "Hotéis",         emoji: "🏨", color: "#1D9E75" },
-  { slug: "rent-a-car",    label: "Rent-a-Car",     emoji: "🚗", color: "#374151" },
-  { slug: "eventos",       label: "Eventos",        emoji: "🎉", color: "#DB2777" },
+  { slug: "restaurantes",  label: "Restaurantes",  emoji: "🍽️", color: "#C4622D", image: "/categories/restaurantes.png" },
+  { slug: "bares",         label: "Bares",          emoji: "🍹", color: "#1A8FBF", image: "/categories/bares.png" },
+  { slug: "musica-ao-vivo",label: "Música ao Vivo", emoji: "🎶", color: "#7C3AED", image: "/categories/musica-ao-vivo.png" },
+  { slug: "praias",        label: "Praias",         emoji: "🏖️", color: "#0B5E8A", image: "/categories/praias.png" },
+  { slug: "historico",     label: "Histórico",      emoji: "🏛️", color: "#92400E", image: "/categories/historico.png" },
+  { slug: "hoteis",        label: "Hotéis",         emoji: "🏨", color: "#1D9E75", image: "/categories/hoteis.png" },
+  { slug: "rent-a-car",    label: "Rent-a-Car",     emoji: "🚗", color: "#374151", image: "/categories/rent-a-car.png" },
+  { slug: "eventos",       label: "Eventos",        emoji: "🎉", color: "#DB2777", image: "/categories/eventos.png" },
 ] as const;
 
 export type CategorySlug = (typeof CATEGORIES)[number]["slug"];

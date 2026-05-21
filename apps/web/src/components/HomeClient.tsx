@@ -2,11 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowRight, TrendingUp } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Navbar } from "@/components/ui/Navbar";
-import { PlaceCard } from "@/components/places/PlaceCard";
 import { CATEGORIES } from "@/lib/types";
-import type { Place } from "@/lib/types";
 
 /* Vértices do polígono da ilha — fonte única de verdade. */
 const ISLAND_POINTS: [number,number][] = [
@@ -222,7 +220,7 @@ function DoorPanel({ side, open }: { side: "left" | "right"; open: boolean }) {
    ═══════════════════════════════════════════════════════════ */
 type Phase = "hero" | "opening" | "done";
 
-export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
+export function HomeClient() {
   const [phase, setPhase] = useState<Phase>("hero");
   const [doorsOpen, setDoorsOpen] = useState(false);
   const [tiLeft, setTiLeft] = useState<number | null>(null);
@@ -471,43 +469,19 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
               <Link
                 key={cat.slug}
                 href={`/explorar?category=${cat.slug}`}
-                className="group flex flex-col items-center gap-2 p-5 rounded-3xl border border-ocean/8 bg-white
-                           shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-300"
+                className="group relative overflow-hidden rounded-3xl shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-300 aspect-[4/3]"
                 style={{ animationDelay: `${i * 0.05}s` }}
               >
-                <span className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl
-                                 transition-transform duration-300 group-hover:scale-110"
-                  style={{ backgroundColor: `${cat.color}15` }}>
-                  {cat.emoji}
-                </span>
-                <span className="font-display font-semibold text-sm text-ocean-dark text-center leading-tight">
+                <img
+                  src={cat.image}
+                  alt={cat.label}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+                <span className="absolute bottom-3 left-0 right-0 text-center font-display font-semibold text-sm text-white leading-tight px-2">
                   {cat.label}
                 </span>
               </Link>
-            ))}
-          </div>
-        </section>
-
-        {/* Featured places */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-16">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-terra" />
-              <h2 className="font-display font-bold text-ocean-dark text-2xl">
-                Mais populares
-              </h2>
-            </div>
-            <Link href="/explorar"
-              className="text-sm font-display font-semibold text-ocean hover:text-ocean-dark transition-colors flex items-center gap-1">
-              Ver todos <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {topPlaces.map((place, i) => (
-              <div key={place.id} className="animate-fade-up"
-                style={{ animationDelay: `${i * 0.08}s` }}>
-                <PlaceCard place={place} variant="grid" />
-              </div>
             ))}
           </div>
         </section>
