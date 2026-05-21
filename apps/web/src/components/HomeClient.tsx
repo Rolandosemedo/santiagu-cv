@@ -255,10 +255,13 @@ export function HomeClient() {
   const contentVisible = phase !== "hero";
 
   return (
-    <div style={{ overflowX: "hidden" }}>
+    <div>
 
       {/* ── Navbar ────────────────────────────────────────── */}
       <div style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 60,
         opacity: phase === "done" ? 1 : 0,
         transition: `opacity 0.7s ${EASE}`,
         pointerEvents: phase === "done" ? "auto" : "none",
