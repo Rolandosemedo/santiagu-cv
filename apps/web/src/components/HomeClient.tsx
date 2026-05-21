@@ -417,8 +417,8 @@ export function HomeClient({ topPlaces }: { topPlaces: Place[] }) {
                 width: "100%", height: "100%",
                 overflow: "visible", pointerEvents: "none",
               }}>
-                {whitePath && <path d={whitePath} stroke="rgba(255,255,255,0.85)" strokeWidth="1.5" fill="none" />}
-                {redPath   && <path d={redPath}   stroke="#CF2029"                 strokeWidth="1.5" fill="none" />}
+                {whitePath && <path d={whitePath} stroke="rgba(255,255,255,0.85)" strokeWidth="2.5" fill="none" />}
+                {redPath   && <path d={redPath}   stroke="#CF2029"                 strokeWidth="2.5" fill="none" />}
               </svg>
             )}
 
