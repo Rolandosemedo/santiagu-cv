@@ -40,7 +40,7 @@ export async function placesRoutes(fastify: FastifyInstance) {
 
     if (category) query = query.eq("category_slug", category);
     if (rating)   query = query.gte("rating", parseFloat(rating));
-    if (q)        query = query.or(`name.ilike.%${q}%,description.ilike.%${q}%`);
+    if (q)        query = query.ilike("name", `%${q}%`);
 
     query = query
       .order("rating", { ascending: false })

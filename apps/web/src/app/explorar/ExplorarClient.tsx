@@ -25,6 +25,9 @@ export function ExplorarClient({ initialPlaces }: { initialPlaces: Place[] }) {
   const [minRating, setMinRating] = useState(0);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [places, setPlaces] = useState<Place[]>(initialPlaces);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     const timer = setTimeout(async () => {
@@ -55,19 +58,18 @@ export function ExplorarClient({ initialPlaces }: { initialPlaces: Place[] }) {
       if (minRating && p.rating < minRating) return false;
       if (activeTag && !p.tags?.some((t) => t === activeTag)) return false;
       if (query) {
-        const q = query.toLowerCase();
-        return (
-          p.name.toLowerCase().includes(q) ||
-          p.tags?.some((t) => t.toLowerCase().includes(q)) ||
-          p.description.toLowerCase().includes(q)
-        );
+        return p.name.toLowerCase().includes(query.toLowerCase());
       }
       return true;
     });
   }, [places, category, minRating, activeTag, query]);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white" style={{
+      opacity: mounted ? 1 : 0,
+      transform: mounted ? "scale(1)" : "scale(0.98)",
+      transition: "opacity 0.5s ease, transform 0.5s ease",
+    }}>
       <Navbar />
 
       {/* ── Header ─────────────────────────────────────── */}

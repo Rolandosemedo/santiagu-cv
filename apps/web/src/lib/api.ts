@@ -115,12 +115,7 @@ export async function fetchPlaces(
 
     if (filters.q) {
       const q = filters.q.toLowerCase();
-      data = data.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.tags?.some((t) => t.toLowerCase().includes(q)) ||
-          p.description.toLowerCase().includes(q)
-      );
+      data = data.filter((p) => p.name.toLowerCase().includes(q));
     }
 
     if (filters.rating) {
