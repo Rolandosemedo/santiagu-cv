@@ -32,22 +32,20 @@ export function CategoryFilter({ selected, onChange }: CategoryFilterProps) {
             key={cat.slug}
             onClick={() => onChange(isActive ? null : cat.slug)}
             aria-pressed={isActive}
-            className="category-pill whitespace-nowrap shrink-0"
+            className="category-pill whitespace-nowrap shrink-0 flex items-center gap-1.5 !pl-1"
             style={
               isActive
-                ? {
-                    backgroundColor: cat.color,
-                    borderColor: cat.color,
-                    color: "white",
-                  }
-                : {
-                    backgroundColor: `${cat.color}10`,
-                    borderColor: `${cat.color}30`,
-                    color: cat.color,
-                  }
+                ? { backgroundColor: cat.color, borderColor: cat.color, color: "white" }
+                : { backgroundColor: `${cat.color}10`, borderColor: `${cat.color}30`, color: cat.color }
             }
           >
-            {cat.emoji} {cat.label}
+            <img
+              src={cat.image}
+              alt=""
+              aria-hidden="true"
+              className="w-6 h-6 rounded-full object-cover shrink-0"
+            />
+            {cat.label}
           </button>
         );
       })}
